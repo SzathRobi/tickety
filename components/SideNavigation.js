@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 function SideNavigation({ isNavOpen }) {
   return (
     <aside
@@ -7,28 +9,32 @@ function SideNavigation({ isNavOpen }) {
     >
       <nav>
         <ul>
-          <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
-            <p>Dashboard</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-              />
-            </svg>
+          <li className="hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
+            <Link href="/">
+              <a className="flex justify-between items-center gap-4">
+                <span className="flex-1">Dashboard</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+                  />
+                </svg>
+              </a>
+            </Link>
           </li>
           <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
             <p>Manage Roles</p>
@@ -64,22 +70,26 @@ function SideNavigation({ isNavOpen }) {
               />
             </svg>
           </li>
-          <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
-            <p>My Projects</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-              />
-            </svg>
+          <li className="hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
+            <Link href="/my_projects">
+              <a className="flex justify-between items-center gap-4">
+                <span className="flex-1">My Projects</span>{" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+              </a>
+            </Link>
           </li>
           <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
             <p>My Tickets</p>
