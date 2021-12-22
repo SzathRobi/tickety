@@ -34,7 +34,7 @@ function Home({ isConnected }) {
     };
 
     return (
-      <div className="w-full p-4 md:pl-20 bg-stone-100">
+      <section className="w-full p-4 md:pl-20 bg-stone-100">
         <div className="grid gap-y-16 grid-cols-2">
           <div className="w-80">
             <Bar data={data} />
@@ -54,7 +54,7 @@ function Home({ isConnected }) {
             for instructions.
           </h2>
         )}
-      </div>
+      </section>
     );
   }
 
