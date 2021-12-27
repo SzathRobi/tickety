@@ -4,15 +4,16 @@ import Ticket from "../../../models/Ticket";
 export default async function handler(req, res) {
   await dbConnect();
   const { method } = req;
-  const id = req.body._id;
+  const id = req.query.ticket;
 
   switch (method) {
     case "GET":
       try {
-        const ticket = Ticket.findById({ id });
+        const ticket = await Ticket.findById(id);
         res.status(200).json({ success: true, data: ticket });
       } catch (error) {
-        res.status(400).json({ success: false, msg: error });
+        res.status(400).json({ success: false });
+        console.log(error);
       }
       break;
     case "PUT":
