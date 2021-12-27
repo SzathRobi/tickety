@@ -3,7 +3,7 @@ import Link from "next/link";
 function SideNavigation({ isNavOpen }) {
   return (
     <aside
-      className={` bg-teal-800 h-full text-white transition-all duration-300 absolute top-20 md:-left-44 hover:md:-left-0 ${
+      className={`bg-teal-800 h-full text-white transition-all duration-300 pt-20 absolute top-0 md:-left-44 hover:md:-left-0 ${
         isNavOpen ? "left-0" : "-left-60"
       }`}
     >

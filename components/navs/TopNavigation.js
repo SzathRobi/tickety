@@ -4,7 +4,7 @@ function TopNavigation({ toggleNavOpen }) {
   const { user, error, isLoading } = useUser();
 
   return (
-    <header className="flex items-center justify-between p-4 bg-teal-700 text-white">
+    <header className="flex items-center justify-between p-4 bg-teal-700 text-white relative z-20">
       <div
         className="w-10 md:hidden hover:cursor-pointer"
         onClick={() => toggleNavOpen()}

@@ -3,7 +3,7 @@ function Modal({ children, isOpen = false, updateIsOpen = null }) {
     <section
       className={`${
         isOpen ? "block" : "hidden"
-      } flex items-center justify-center p-4 absolute inset-0 w-full h-screen bg-stone-800/70`}
+      } flex items-center justify-center p-4 fixed inset-0 w-full h-screen bg-stone-800/70`}
     >
       <button
         onClick={() => updateIsOpen()}
