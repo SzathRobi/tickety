@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import UserTableRow from "../../components/table/UserTableRow";
+import Link from "next/link";
 
-function Project({ project, users }) {
+function Project({ project, users, tickets }) {
   const { user, error, isLoading } = useUser();
 
   if (isLoading) return <div>Loading...</div>;
@@ -59,17 +60,30 @@ function Project({ project, users }) {
       console.log("data:", data);
     };
 
-    const [tickets, setTickets] = useState([
-      {
-        id: 1,
-        title: "demo ticket",
-        submitter: "demo submitter",
-        developer: "demo developer",
-        status: "open",
-        priority: "medium",
-        created: "2022.12.23 14:50",
-      },
-    ]);
+    const [newTicket, setNewTicket] = useState({
+      title: "",
+      desc: "",
+      project: project.name,
+      status: "new",
+      type: "",
+      priority: "low",
+      submitter: user.nickname,
+      devs_assigned: [],
+    });
+
+    const updateNewTicket = (event) => {
+      setNewTicket({ ...newTicket, [event.target.name]: event.target.value });
+    };
+
+    const addNewTicket = async (event) => {
+      event.preventDefault();
+      const res = await fetch("/api/tickets", {
+        method: "POST",
+        body: JSON.stringify(newTicket),
+      });
+      const data = await res.json();
+      console.log(data);
+    };
 
     return (
       <section className="p-4 md:pl-16">
@@ -138,6 +152,7 @@ function Project({ project, users }) {
               </table>
             </div>
             <Modal isOpen={isUserModalOpen} updateIsOpen={toggleUserModalOpen}>
+              {/**sssssssssssssssssssssssssssssssssssssssssssssssssss */}
               <div className="flex flex-col rounded overflow-hidden relative">
                 <button
                   onClick={() => toggleUserModalOpen()}
@@ -214,22 +229,26 @@ function Project({ project, users }) {
                         {ticket.created}
                       </td>
                       <td className="p-2">
-                        <button className="flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </button>
+                        <Link
+                          href={`/my_projects/${project.name}/${ticket._id}`}
+                        >
+                          <a className="flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-6 w-6"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </a>
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -240,17 +259,62 @@ function Project({ project, users }) {
               isOpen={isTicketModalOpen}
               updateIsOpen={toggleTicketModalOpen}
             >
-              <form>
-                <h1 className="p-8 bg-red-500">hell yeah Tickets</h1>
-                <label>
-                  <p>Title</p>
-                  <input type="text" />
-                </label>
-                <label>
-                  <p>Description</p>
-                  <input type="text" />
-                </label>
-              </form>
+              <div className="flex flex-col rounded overflow-hidden relative bg-white">
+                <button
+                  onClick={() => toggleTicketModalOpen()}
+                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center font-medium text-white rounded-full bg-red-600 hover:bg-red-700 transition-all focus:outline-4"
+                >
+                  X
+                </button>
+                <h3 className="bg-gray-200 font-medium p-4">Add New Ticket</h3>
+                <div className="flex flex-col p-2">
+                  <label>
+                    <p>Title</p>
+                    <input
+                      onChange={(event) => updateNewTicket(event)}
+                      name="title"
+                      type="text"
+                    />
+                  </label>
+                  <label>
+                    <p>Description</p>
+                    <textarea
+                      onChange={(event) => updateNewTicket(event)}
+                      name="desc"
+                      rows={3}
+                    ></textarea>
+                  </label>
+                  <label>
+                    <p>Priotity</p>
+                    <select
+                      onChange={(event) => updateNewTicket(event)}
+                      name="priority"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="critical">Critical</option>
+                    </select>
+                  </label>
+                  <label>
+                    <p>Type</p>
+                    <select
+                      onChange={(event) => updateNewTicket(event)}
+                      name="type"
+                    >
+                      <option value="bug/error">Bug/Error</option>
+                      <option value="feature request">Feature Request</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                </div>
+                <button
+                  onClick={(event) => addNewTicket(event)}
+                  className="py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
+                >
+                  CREATE TICKET
+                </button>
+              </div>
             </Modal>
           </div>
         </div>
@@ -273,8 +337,17 @@ export async function getServerSideProps({ params }) {
   });
   const users = await usersRes.json();
 
+  const ticketsRes = await fetch("http://localhost:3000/api/tickets", {
+    method: "GET",
+  });
+  const tickets = await ticketsRes.json();
+
   return {
-    props: { project: project.data[0], users: users.data },
+    props: {
+      project: project.data[0],
+      users: users.data,
+      tickets: tickets.data,
+    },
   };
 }
 export default withPageAuthRequired(Project);
