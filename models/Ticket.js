@@ -35,6 +35,18 @@ const TicketSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  updated_at: {
+    type: Date,
+  },
+  history: {
+    type: Array,
+  },
+  comments: {
+    type: Array,
+  },
+  files: {
+    type: Array,
+  },
 });
 
 export default mongoose.models.Ticket || mongoose.model("Ticket", TicketSchema);
