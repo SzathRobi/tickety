@@ -17,13 +17,14 @@ export default async function handler(req, res) {
       }
       break;
     case "PUT":
+      //console.log("req.body:", req.body);
       try {
         const ticket = await Ticket.findByIdAndUpdate(
-          { id },
-          { ticket: req.body },
+          { _id: id },
+          JSON.parse(req.body),
           { new: true }
         );
-        if (!project) {
+        if (!ticket) {
           return res
             .status(400)
             .json({ success: false, msg: "Did not found anything" });
