@@ -1,5 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
-import React from "react";
+import { stringify } from "postcss";
+import React, { useEffect } from "react";
 import { useState } from "react/cjs/react.development";
 
 function Ticket({ ticket }) {
@@ -149,6 +150,21 @@ function Ticket({ ticket }) {
     const [ticketStatus, setTicketStatus] = useState(ticket.status);
     const [ticketProject, setTicketProject] = useState(ticket.project);
     const [ticketType, setTicketType] = useState(ticket.type);
+    const [ticketFiles, setTicketFiles] = useState(ticket.files);
+    const [ticketFile, setTicketFile] = useState({});
+    const [ticketFileDesc, setTicketFileDesc] = useState("");
+    const updateTicketFileDesc = (event) =>
+      setTicketFileDesc(event.target.value);
+
+    const [imgSrc, setImgSrc] = useState("");
+    function getBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
 
     const ticketData = {
       ...ticket,
@@ -161,6 +177,51 @@ function Ticket({ ticket }) {
       project: ticketProject,
       type: ticketType,
     };
+
+    const selectImg = (event) => {
+      getBase64(event.target.files[0]).then((data) => {
+        setImgSrc(data);
+      });
+      setTicketFile({
+        ...ticketFile,
+        name: event.target.files[0].name.slice(0, -4),
+        fileType: event.target.files[0].name.substring(
+          event.target.files[0].name.length - 3
+        ),
+      });
+    };
+
+    useEffect(() => {
+      console.log(ticketFile);
+    }, [ticketFile]);
+
+    const uploadImg = async () => {
+      const file = {
+        name: ticketFile.name,
+        fileType: ticketFile.fileType,
+        uploader: user?.nickname || "error",
+        url: `${imgSrc}`,
+        notes: ticketFileDesc,
+      };
+
+      ticketFiles.push(file);
+
+      ticketData = {
+        ...ticketData,
+        files: ticketFiles,
+      };
+
+      console.log("ticketData:", ticketData);
+
+      const imgReq = await fetch(`/api/tickets/${ticket._id}`, {
+        method: "PUT",
+        body: JSON.stringify(ticketData),
+      });
+
+      const imgRes = await imgReq.json();
+      console.log(imgRes);
+    };
+
     const [ticketChangedData, setTicketChangedData] = useState({});
     const updateTicketData = (event, modifier) => {
       modifier(event.target.value);
@@ -466,7 +527,8 @@ function Ticket({ ticket }) {
                       {his.created_at
                         .split(".")[0]
                         .slice(0, -3)
-                        .replaceAll("-", ":")}
+                        .replaceAll("-", ":")
+                        .replace("T", " ")}
                     </td>
                   </tr>
                 ))
@@ -487,30 +549,40 @@ function Ticket({ ticket }) {
             <div className="flex items-center justify-between">
               <label>
                 <p>Select File</p>
-                <button className="p-2 flex gap-2 items-center justify-center bg-gray-500 hover:bg-gray-600 transition-colors text-white text-sm rounded">
-                  <span>UPLOAD FILE</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                </button>
+                <input
+                  type="file"
+                  className="p-2 flex gap-2 items-center justify-center bg-gray-500 hover:bg-gray-600 transition-colors text-white text-sm rounded"
+                  onChange={(event) => selectImg(event)}
+                />
               </label>
+              <button
+                onClick={() => uploadImg()}
+                className="flex items-center  py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
+              >
+                <span>UPLOAD FILE</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+              </button>
+              <img src={imgSrc} height="100" alt="sg"></img>
               <label>
                 <h6>Add Description</h6>
-                <input type="text" />
-                <button className="py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800">
-                  ADD DESCRIPTION
-                </button>
+                <input
+                  type="text"
+                  value={ticketFileDesc}
+                  onChange={(event) => updateTicketFileDesc(event)}
+                />
               </label>
             </div>
           </div>
@@ -520,19 +592,30 @@ function Ticket({ ticket }) {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="font-medium p-2">File</th>
                 <th className="font-medium p-2">Uploader</th>
+                <th className="font-medium p-2">File</th>
                 <th className="font-medium p-2">Notes</th>
                 <th className="font-medium p-2">Created</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td>Currently No Files</td>
-                <td></td>
-              </tr>
+              {ticket.files ? (
+                ticket.files.map((file) => (
+                  <tr key={file._id}>
+                    <td>{file.uploader}</td>
+                    <td>{file.name}</td>
+                    <td>{file.notes}</td>
+                    <td>{file.created_at}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>Currently No Files</td>
+                  <td></td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -554,19 +637,3 @@ export async function getServerSideProps({ params }) {
 }
 
 export default Ticket;
-
-/* const ticketData = {
-      title: ticket.title,
-      desc: ticket.desc,
-      submitter: ticket.submitter,
-      devs_assigned: ticket.devs_assigned,
-      priority: ticket.priority,
-      status: ticket.status,
-      project: ticket.project,
-      type: ticket.type,
-    };
-
-    const updateTicketData = (event, data) => {
-      ticketData[data] = event.target.value;
-    };
-*/

@@ -34,14 +34,22 @@ const HistorySchema = new mongoose.Schema({
 });
 
 const FileSchema = new mongoose.Schema({
-  file: {
+  uploader: {
     type: String,
   },
-  Uploader: {
+  url: {
     type: String,
   },
-  Notes: {
+  notes: {
     type: String,
+  },
+  name: {
+    type: String,
+    default: "N/A",
+  },
+  fileType: {
+    type: String,
+    default: "N/A",
   },
   created_at: {
     type: Date,
