@@ -8,22 +8,32 @@ import Link from "next/link";
 function Project({ project, users, tickets }) {
   const { user, error, isLoading } = useUser();
 
+  const [descShown, setDescShown] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [assignedUsers, setAssignedUsers] = useState(project.devs_assigned);
+
+  const [newTicket, setNewTicket] = useState({
+    title: "",
+    desc: "",
+    project: project.name,
+    status: "new",
+    type: "",
+    priority: "low",
+    submitter: user.nickname,
+    devs_assigned: [],
+  });
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
   if (user) {
-    const [descShown, setDescShown] = useState(false);
     const toggleDescShown = () => setDescShown((descShown) => !descShown);
 
-    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const toggleUserModalOpen = () =>
       setIsUserModalOpen((isUserModalOpen) => !isUserModalOpen);
 
-    const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const toggleTicketModalOpen = () =>
       setIsTicketModalOpen((isTicketModalOpen) => !isTicketModalOpen);
-
-    const [assignedUsers, setAssignedUsers] = useState(project.devs_assigned);
 
     const assignNewUser = (user) => {
       setAssignedUsers([...assignedUsers, user]);
@@ -59,17 +69,6 @@ function Project({ project, users, tickets }) {
       const data = await res.json();
       console.log("data:", data);
     };
-
-    const [newTicket, setNewTicket] = useState({
-      title: "",
-      desc: "",
-      project: project.name,
-      status: "new",
-      type: "",
-      priority: "low",
-      submitter: user.nickname,
-      devs_assigned: [],
-    });
 
     const updateNewTicket = (event) => {
       setNewTicket({ ...newTicket, [event.target.name]: event.target.value });
