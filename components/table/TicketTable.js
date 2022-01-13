@@ -1,6 +1,7 @@
 import { formatDate } from "../../utilities/formatDate";
 
-function TicketTable({ tableHeaders, tableDatas }) {
+function TicketTable({ tableHeaders, tableDatas, onClick = null }) {
+  //console.log(tableDatas);
   return (
     <table className="w-full table-auto">
       <thead>
@@ -15,7 +16,13 @@ function TicketTable({ tableHeaders, tableDatas }) {
       <tbody>
         {tableDatas.length !== 0 ? (
           tableDatas.map((datas) => (
-            <tr key={datas._id} className="p-2 border-b-2 border-gray-400">
+            <tr
+              key={datas._id}
+              onClick={onClick ? () => onClick(datas) : null}
+              className={`p-2 border-b-2 border-gray-400 transition-colors ${
+                onClick && "cursor-pointer hover:bg-gray-200"
+              }`}
+            >
               {Object.entries(datas)
                 .filter(
                   (data) =>
@@ -26,7 +33,8 @@ function TicketTable({ tableHeaders, tableDatas }) {
                 .map((data) => (
                   <td key={data[0]} className="py-2 max-w-xs">
                     {data[0] === "created_at"
-                      ? formatDate(data[1])
+                      ? //modify here to work
+                        formatDate(data[1])
                       : Array.isArray(data[1]) && data[1].length > 1
                       ? data[1].map((subData) => <p key={subData}>{subData}</p>)
                       : data[1]}
@@ -38,7 +46,7 @@ function TicketTable({ tableHeaders, tableDatas }) {
           <tr>
             <td></td>
             <td></td>
-            <td>Currently No history</td>
+            <td>Currently No Data</td>
             <td></td>
           </tr>
         )}

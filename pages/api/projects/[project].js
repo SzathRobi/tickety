@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   switch (method) {
     case "GET":
       try {
-        const projects = await Project.find({ name: projectName });
-        res.status(200).json({ success: true, data: projects });
+        const project = await Project.find({ name: projectName });
+        res.status(200).json({ success: true, data: project });
       } catch (error) {
         res.status(400).json({ success: false });
       }

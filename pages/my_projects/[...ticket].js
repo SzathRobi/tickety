@@ -1,6 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import { stringify } from "postcss";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react/cjs/react.development";
 import Input from "../../components/controls/Input";
 import TicketTable from "../../components/table/TicketTable";
@@ -10,8 +10,12 @@ import { updateData } from "../../utilities/updateData";
 import Image from "next/image";
 import { getBase64 } from "../../utilities/getBase64";
 import Button from "../../components/controls/Button";
-
-function Ticket({ ticket }) {
+import Modal from "../../components/modal/Modal";
+import Select from "../../components/controls/Select";
+import Option from "../../components/controls/Option";
+import MultiSelect from "../../components/controls/MultiSelect";
+function Ticket({ ticket, users, project }) {
+  // console.log("project:", project);
   const { user, error, isLoading } = useUser();
 
   const [ticketHistory, setTicketHistory] = useState(ticket.history);
@@ -39,12 +43,27 @@ function Ticket({ ticket }) {
   const [ticketChangedData, setTicketChangedData] = useState({});
   const [commentMsg, setCommentMsg] = useState("");
 
+  //console.log("user:", user);
   const [comment, setComment] = useState({
-    commenter: user?.nickname,
+    commenter: "",
     msg: "",
+    created_at: "",
   });
 
   const [commentArr, setCommentArr] = useState(ticket.comments);
+
+  const [fileModalOpen, setFileModalOpen] = useState(false);
+  const toggleFileModalOpen = () => setFileModalOpen(!fileModalOpen);
+  const [actualFile, setActualFile] = useState({});
+  const openFileModal = (file) => {
+    setActualFile(file);
+    toggleFileModalOpen();
+  };
+
+  useEffect(() => {
+    console.log(ticketDevsAssigned);
+  }, [ticketDevsAssigned]);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -99,8 +118,14 @@ function Ticket({ ticket }) {
       updateData(`tickets/${ticket._id}`, ticketData);
     };
 
-    const updateTicketData = (event, modifier) => {
-      modifier(event.target.value);
+    const updateTicketData = (
+      event,
+      modifier,
+      devs = null,
+      state = null,
+      willRemove = false
+    ) => {
+      willRemove ? null : modifier([...state, devs] || event.target.value);
       ticketData = {
         ...ticket,
         title: ticketTitle,
@@ -112,13 +137,37 @@ function Ticket({ ticket }) {
         project: ticketProject,
         type: ticketType,
       };
+      console.log("ticketData:", ticketData);
+
+      /******************************************************************************/
+
+      /**Put if here to check obj / (arr diffs => create changeObj with arr values)**/
+      //  OR NOT  //
+      /******************************************************************************/
 
       setTicketChangedData(findObjectsDiffs(ticket, ticketData));
+      console.log("ticketChangedData: ", ticketChangedData);
       ///
+    };
+
+    const addDevs = (dev) => {
+      setTicketDevsAssigned(ticketDevsAssigned.concat(dev));
+      //console.log("ticketDevsAssigned:", ticketDevsAssigned);
+    };
+
+    //dev = user.email
+    const removeDevs = (dev) => {
+      const filteredList = ticketDevsAssigned.filter(
+        (actualDev) => actualDev !== dev
+      );
+      //console.log("filteredList:", filteredList);
+      setTicketDevsAssigned(filteredList);
+      //console.log("ticketDevsAssigned on remove:", ticketDevsAssigned);
     };
 
     const saveChanges = async () => {
       const keys = Object.keys(ticketChangedData);
+      console.log("keys:", keys);
 
       let oldValues = keys.map((key) => ticket[key]);
       let newValues = keys.map((key) => ticketData[key]);
@@ -130,26 +179,35 @@ function Ticket({ ticket }) {
         new_values: newValues,
       };
 
-      ticketHistory.push(history);
+      setTicketHistory(ticketHistory.concat(history));
       console.log("ticketHistory:", ticketHistory);
 
       ticketData[history] = ticketHistory;
 
+      console.log("ticketData: ", ticketData);
       updateData(`tickets/${ticket._id}`, ticketData);
     };
 
     ///// feature - add comment to ticket //////
 
     const updateCommentMsg = (event) => {
+      const date = new Date();
       setCommentMsg(event.target.value);
-      setComment({ ...comment, msg: commentMsg });
+      setComment({
+        ...comment,
+        commenter: user.nickname,
+        msg: commentMsg,
+        created_at: date.toISOString(),
+      });
     };
 
     const addCommentToTicket = async () => {
-      commentArr.push(comment);
+      //setComment({ ...comment, created_at: Date.now() });
+      console.log(comment);
+      setCommentArr(commentArr.concat(comment));
       const newTicket = { ...ticket, comments: commentArr };
-
-      updateData(`tickets/${ticket._id}`, newTicket);
+      console.log();
+      // updateData(`tickets/${ticket._id}`, newTicket);
     };
 
     return (
@@ -171,7 +229,7 @@ function Ticket({ ticket }) {
           <div className="grid grid-cols-2">
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Title</h3>
-              <input
+              <Input
                 type="text"
                 value={ticketTitle}
                 onChange={(event) => updateTicketData(event, setTicketTitle)}
@@ -180,7 +238,7 @@ function Ticket({ ticket }) {
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Description</h3>
-              <input
+              <Input
                 type="text"
                 value={ticketDesc}
                 onChange={(event) => updateTicketData(event, setTicketDesc)}
@@ -189,7 +247,7 @@ function Ticket({ ticket }) {
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Submitter</h3>
-              <input
+              <Input
                 type="text"
                 value={ticket.submitter}
                 disabled={shouldModify === false}
@@ -197,66 +255,44 @@ function Ticket({ ticket }) {
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Assigned Developers</h3>
-              <h1>{ticket.devs_assigned}</h1>
+              <MultiSelect
+                headerValue={ticketDevsAssigned}
+                optionsValue={project[0].devs_assigned}
+                canOpen={shouldModify}
+                onClick={{ addDevs, removeDevs, updateTicketData }}
+                setTicketDevsAssigned={setTicketDevsAssigned}
+                ticketDevsAssigned={ticketDevsAssigned}
+              />
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Priority</h3>
-              <select
+              <Select
                 value={ticketPriority}
+                defaultValue={ticketPriority}
                 onChange={(event) => updateTicketData(event, setTicketPriority)}
                 disabled={shouldModify === false}
-                className="appearance-none relative z-0"
               >
-                <option selected={ticket.priority === "low"} value="low">
-                  Low
-                </option>
-                <option selected={ticket.priority === "medium"} value="medium">
-                  Medium
-                </option>
-                <option selected={ticket.priority === "high"} value="high">
-                  High
-                </option>
-                <option
-                  selected={ticket.priority === "critical"}
-                  value="critical"
-                >
-                  Critical
-                </option>
-              </select>
+                <Option value="low">Low</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="high">High</Option>
+                <Option value="critical">Critical</Option>
+              </Select>
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Status</h3>
-              <select
+              <Select
                 value={ticketStatus}
                 onChange={(event) => updateTicketData(event, setTicketStatus)}
                 disabled={shouldModify === false}
-                className="appearance-none relative z-0"
               >
-                <option selected={ticket.status === "new"} value="new">
-                  New
-                </option>
-                <option selected={ticket.status === "open"} value="open">
-                  Open
-                </option>
-                <option
-                  selected={ticket.status === "in_progress"}
-                  value="in_progress"
-                >
-                  In Progress
-                </option>
-                <option
-                  selected={ticket.status === "resolved"}
-                  value="resolved"
-                >
-                  Resolved
-                </option>
-                <option
-                  selected={ticket.status === "additional_info_req"}
-                  value="additional_info_req"
-                >
+                <Option value="new">New</Option>
+                <Option value="open">Open</Option>
+                <Option value="in_progress">In Progress</Option>
+                <Option value="resolved">Resolved</Option>
+                <Option value="additional_info_req">
                   Additional Info Required
-                </option>
-              </select>
+                </Option>
+              </Select>
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Project</h3>
@@ -264,25 +300,15 @@ function Ticket({ ticket }) {
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Type</h3>
-              <select
+              <Select
                 value={ticketType}
                 onChange={(event) => updateTicketData(event, setTicketType)}
                 disabled={shouldModify === false}
-                className="appearance-none relative z-0"
               >
-                <option selected={ticket.type === "bug"} value="bug">
-                  Bug/Error
-                </option>
-                <option
-                  selected={ticket.type === "feature_req"}
-                  value="feature_req"
-                >
-                  Feature Request
-                </option>
-                <option selected={ticket.type === "other"} value="other">
-                  Other
-                </option>
-              </select>
+                <Option value="bug">Bug/Error</Option>
+                <Option value="feature_req">Feature Request</Option>
+                <Option value="other">Other</Option>
+              </Select>
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Created</h3>
@@ -310,7 +336,7 @@ function Ticket({ ticket }) {
           </h2>
           <TicketTable
             tableHeaders={["Commenter", "Message", "Created"]}
-            tableDatas={ticket.comments}
+            tableDatas={commentArr}
           />
         </div>
         {/** !!!!!!!!!!!!  TICKET HISTORY TRACKING  !!!!!!!!!!!! */}
@@ -376,8 +402,16 @@ function Ticket({ ticket }) {
           <TicketTable
             tableHeaders={["Uploader", "Notes", "File", "Created"]}
             tableDatas={ticket.files}
+            onClick={(file) => openFileModal(file)}
           />
         </div>
+        <Modal isOpen={fileModalOpen} updateIsOpen={toggleFileModalOpen}>
+          <div>
+            <h1>ACTUAL FILE</h1>
+            <h2>{actualFile.name}</h2>
+            <img src={actualFile.url} height="300" />
+          </div>
+        </Modal>
       </section>
     );
   }
@@ -390,8 +424,18 @@ export async function getServerSideProps({ params }) {
   });
   const ticket = await ticketRes.json();
 
+  const usersRes = await fetch("http://localhost:3000/api/users", {
+    method: "GET",
+  });
+  const users = await usersRes.json();
+
+  const projectRes = await fetch(
+    `http://localhost:3000/api/projects/${ticket.data.project}`
+  );
+  const project = await projectRes.json();
+
   return {
-    props: { ticket: ticket.data },
+    props: { ticket: ticket.data, users: users.data, project: project.data },
   };
 }
 

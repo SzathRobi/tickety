@@ -4,4 +4,4 @@
  */
 
 export const formatDate = (date) =>
-  date.split(".")[0].slice(0, -3).replaceAll("-", ":").replace("T", " ");
+  date.split(".")[0].slice(0, -3).replaceAll("-", ".").replace("T", " ");
