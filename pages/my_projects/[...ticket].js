@@ -1,21 +1,21 @@
+import { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0";
-import { stringify } from "postcss";
-import React, { useEffect } from "react";
-import { useState } from "react/cjs/react.development";
+
 import Input from "../../components/controls/Input";
-import TicketTable from "../../components/table/TicketTable";
-import { findObjectsDiffs } from "../../utilities/findObjectsDiffs";
-import { formatDate } from "../../utilities/formatDate";
-import { updateData } from "../../utilities/updateData";
-import Image from "next/image";
-import { getBase64 } from "../../utilities/getBase64";
 import Button from "../../components/controls/Button";
-import Modal from "../../components/modal/Modal";
 import Select from "../../components/controls/Select";
 import Option from "../../components/controls/Option";
 import MultiSelect from "../../components/controls/MultiSelect";
+import TicketTable from "../../components/table/TicketTable";
+import Modal from "../../components/modal/Modal";
+import SuccessPopup from "../../components/success/SuccessPopup";
+
+import { findObjectsDiffs } from "../../utilities/findObjectsDiffs";
+import { formatDate } from "../../utilities/formatDate";
+import { updateData } from "../../utilities/updateData";
+import { getBase64 } from "../../utilities/getBase64";
+
 function Ticket({ ticket, users, project }) {
-  // console.log("project:", project);
   const { user, error, isLoading } = useUser();
 
   const [ticketHistory, setTicketHistory] = useState(ticket.history);
@@ -43,7 +43,6 @@ function Ticket({ ticket, users, project }) {
   const [ticketChangedData, setTicketChangedData] = useState({});
   const [commentMsg, setCommentMsg] = useState("");
 
-  //console.log("user:", user);
   const [comment, setComment] = useState({
     commenter: "",
     msg: "",
@@ -60,9 +59,32 @@ function Ticket({ ticket, users, project }) {
     toggleFileModalOpen();
   };
 
-  useEffect(() => {
-    console.log(ticketDevsAssigned);
-  }, [ticketDevsAssigned]);
+  const [successPopupOpen, setSuccessPopupOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(true);
+
+  const [ticketData, setTicketData] = useState({
+    ...ticket,
+    title: ticketTitle,
+    desc: ticketDesc,
+    submitter: ticketSubmitter,
+    devs_assigned: ticketDevsAssigned,
+    priority: ticketPriority,
+    status: ticketStatus,
+    project: ticketProject,
+    type: ticketType,
+  });
+
+  const updateTicketData = (event) => {
+    const newValue = event.target.value;
+    setTicketData((prevState) => {
+      return {
+        ...prevState,
+        [event.target.name]: newValue,
+      };
+    });
+    const changedData = findObjectsDiffs(ticket, ticketData);
+    setTicketChangedData(changedData);
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -72,18 +94,6 @@ function Ticket({ ticket, users, project }) {
     const toggleShouldModify = (shouldModify) => {
       setShouldModify(!shouldModify);
       console.log(shouldModify);
-    };
-
-    const ticketData = {
-      ...ticket,
-      title: ticketTitle,
-      desc: ticketDesc,
-      submitter: ticketSubmitter,
-      devs_assigned: ticketDevsAssigned,
-      priority: ticketPriority,
-      status: ticketStatus,
-      project: ticketProject,
-      type: ticketType,
     };
 
     const selectImg = (event) => {
@@ -108,66 +118,37 @@ function Ticket({ ticket, users, project }) {
         notes: ticketFileDesc,
       };
 
-      ticketFiles.push(file);
+      setTicketFiles(ticketFiles.concat(file));
 
-      ticketData = {
+      setTicketData({
         ...ticketData,
         files: ticketFiles,
-      };
+      });
 
       updateData(`tickets/${ticket._id}`, ticketData);
     };
 
-    const updateTicketData = (
-      event,
-      modifier,
-      devs = null,
-      state = null,
-      willRemove = false
-    ) => {
-      willRemove ? null : modifier([...state, devs] || event.target.value);
-      ticketData = {
-        ...ticket,
-        title: ticketTitle,
-        desc: ticketDesc,
-        submitter: ticketSubmitter,
-        devs_assigned: ticketDevsAssigned,
-        priority: ticketPriority,
-        status: ticketStatus,
-        project: ticketProject,
-        type: ticketType,
-      };
-      console.log("ticketData:", ticketData);
-
-      /******************************************************************************/
-
-      /**Put if here to check obj / (arr diffs => create changeObj with arr values)**/
-      //  OR NOT  //
-      /******************************************************************************/
-
-      setTicketChangedData(findObjectsDiffs(ticket, ticketData));
-      console.log("ticketChangedData: ", ticketChangedData);
-      ///
-    };
-
     const addDevs = (dev) => {
-      setTicketDevsAssigned(ticketDevsAssigned.concat(dev));
-      //console.log("ticketDevsAssigned:", ticketDevsAssigned);
+      setTicketData({
+        ...ticketData,
+        devs_assigned: ticketData.devs_assigned.concat(dev),
+      });
+      const changedData = findObjectsDiffs(ticket, ticketData);
+      setTicketChangedData(changedData);
     };
 
     //dev = user.email
     const removeDevs = (dev) => {
-      const filteredList = ticketDevsAssigned.filter(
+      const filteredList = ticketData.devs_assigned.filter(
         (actualDev) => actualDev !== dev
       );
-      //console.log("filteredList:", filteredList);
-      setTicketDevsAssigned(filteredList);
-      //console.log("ticketDevsAssigned on remove:", ticketDevsAssigned);
+      setTicketData({ ...ticketData, devs_assigned: filteredList });
+      const changedData = findObjectsDiffs(ticket, ticketData);
+      setTicketChangedData(changedData);
     };
 
-    const saveChanges = async () => {
+    const saveChanges = () => {
       const keys = Object.keys(ticketChangedData);
-      console.log("keys:", keys);
 
       let oldValues = keys.map((key) => ticket[key]);
       let newValues = keys.map((key) => ticketData[key]);
@@ -177,14 +158,13 @@ function Ticket({ ticket, users, project }) {
         value_keys: keys,
         old_values: oldValues,
         new_values: newValues,
+        created_at: new Date().toISOString(),
       };
 
       setTicketHistory(ticketHistory.concat(history));
-      console.log("ticketHistory:", ticketHistory);
 
       ticketData[history] = ticketHistory;
 
-      console.log("ticketData: ", ticketData);
       updateData(`tickets/${ticket._id}`, ticketData);
     };
 
@@ -203,16 +183,15 @@ function Ticket({ ticket, users, project }) {
 
     const addCommentToTicket = async () => {
       //setComment({ ...comment, created_at: Date.now() });
-      console.log(comment);
       setCommentArr(commentArr.concat(comment));
       const newTicket = { ...ticket, comments: commentArr };
-      console.log();
-      // updateData(`tickets/${ticket._id}`, newTicket);
+      updateData(`tickets/${ticket._id}`, newTicket);
     };
 
     return (
       <section className="p-4 md:pl-20 md:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/******* DETAILS *******/}
+        {successPopupOpen && <SuccessPopup msg={"Sikerlt yeeeeeee"} />}
         <div>
           <Button onClick={() => toggleShouldModify(shouldModify)}>
             MODIFY TICKET
@@ -231,8 +210,9 @@ function Ticket({ ticket, users, project }) {
               <h3 className="font-medium">Ticket Title</h3>
               <Input
                 type="text"
-                value={ticketTitle}
-                onChange={(event) => updateTicketData(event, setTicketTitle)}
+                name="title"
+                value={ticketData.title}
+                onChange={(event) => updateTicketData(event)}
                 disabled={shouldModify === false}
               />
             </div>
@@ -240,8 +220,9 @@ function Ticket({ ticket, users, project }) {
               <h3 className="font-medium">Ticket Description</h3>
               <Input
                 type="text"
-                value={ticketDesc}
-                onChange={(event) => updateTicketData(event, setTicketDesc)}
+                name="desc"
+                value={ticketData.desc}
+                onChange={(event) => updateTicketData(event)}
                 disabled={shouldModify === false}
               />
             </div>
@@ -249,7 +230,7 @@ function Ticket({ ticket, users, project }) {
               <h3 className="font-medium">Submitter</h3>
               <Input
                 type="text"
-                value={ticket.submitter}
+                value={ticketData.submitter}
                 disabled={shouldModify === false}
               />
             </div>
@@ -259,7 +240,7 @@ function Ticket({ ticket, users, project }) {
                 headerValue={ticketDevsAssigned}
                 optionsValue={project[0].devs_assigned}
                 canOpen={shouldModify}
-                onClick={{ addDevs, removeDevs, updateTicketData }}
+                onClick={{ addDevs, removeDevs }}
                 setTicketDevsAssigned={setTicketDevsAssigned}
                 ticketDevsAssigned={ticketDevsAssigned}
               />
@@ -267,9 +248,10 @@ function Ticket({ ticket, users, project }) {
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Priority</h3>
               <Select
-                value={ticketPriority}
-                defaultValue={ticketPriority}
-                onChange={(event) => updateTicketData(event, setTicketPriority)}
+                value={ticketData.priority}
+                name="priority"
+                defaultValue={ticketData.priority}
+                onChange={(event) => updateTicketData(event)}
                 disabled={shouldModify === false}
               >
                 <Option value="low">Low</Option>
@@ -281,8 +263,9 @@ function Ticket({ ticket, users, project }) {
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Status</h3>
               <Select
-                value={ticketStatus}
-                onChange={(event) => updateTicketData(event, setTicketStatus)}
+                value={ticketData.status}
+                name="status"
+                onChange={(event) => updateTicketData(event)}
                 disabled={shouldModify === false}
               >
                 <Option value="new">New</Option>
@@ -301,8 +284,9 @@ function Ticket({ ticket, users, project }) {
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Ticket Type</h3>
               <Select
-                value={ticketType}
-                onChange={(event) => updateTicketData(event, setTicketType)}
+                value={ticketData.type}
+                name="type"
+                onChange={(event) => updateTicketData(event)}
                 disabled={shouldModify === false}
               >
                 <Option value="bug">Bug/Error</Option>

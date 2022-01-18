@@ -2,6 +2,7 @@ import React from "react";
 
 function Select({
   value,
+  name = "",
   onChange,
   disabled = false,
   children,
@@ -10,6 +11,7 @@ function Select({
   return (
     <select
       value={value}
+      name={name}
       defaultValue={value}
       onChange={onChange}
       disabled={disabled}

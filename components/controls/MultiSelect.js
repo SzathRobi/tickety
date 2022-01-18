@@ -13,7 +13,6 @@ function MultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
-  //console.log("headerValue: ", headerValue);
   return (
     <div className="relative">
       <p

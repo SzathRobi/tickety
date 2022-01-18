@@ -14,13 +14,6 @@ function MultiOption({
     // console.log("checked:", checked);
     // checked ? console.log("will REMOVE") : console.log("will ADD");
     checked ? onClick.removeDevs(dev) : onClick.addDevs(dev);
-    onClick.updateTicketData(
-      null,
-      setTicketDevsAssigned,
-      dev,
-      ticketDevsAssigned,
-      checked ? true : false
-    );
   };
   return (
     <label

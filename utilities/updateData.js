@@ -4,5 +4,5 @@ export const updateData = async (route, data) => {
     body: JSON.stringify(data),
   });
   const resData = await res.json();
-  console.log(resData);
+  return resData;
 };
