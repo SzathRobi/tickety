@@ -4,26 +4,37 @@ import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import UserTableRow from "../../components/table/UserTableRow";
 import Link from "next/link";
+import { formatDate } from "../../utilities/formatDate";
 
 function Project({ project, users, tickets }) {
   const { user, error, isLoading } = useUser();
 
+  const [descShown, setDescShown] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [assignedUsers, setAssignedUsers] = useState(project.devs_assigned);
+
+  const [newTicket, setNewTicket] = useState({
+    title: "",
+    desc: "",
+    project: project.name,
+    status: "new",
+    type: "",
+    priority: "low",
+    submitter: user.nickname,
+    devs_assigned: [],
+  });
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
   if (user) {
-    const [descShown, setDescShown] = useState(false);
     const toggleDescShown = () => setDescShown((descShown) => !descShown);
 
-    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const toggleUserModalOpen = () =>
       setIsUserModalOpen((isUserModalOpen) => !isUserModalOpen);
 
-    const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const toggleTicketModalOpen = () =>
       setIsTicketModalOpen((isTicketModalOpen) => !isTicketModalOpen);
-
-    const [assignedUsers, setAssignedUsers] = useState(project.devs_assigned);
 
     const assignNewUser = (user) => {
       setAssignedUsers([...assignedUsers, user]);
@@ -59,17 +70,6 @@ function Project({ project, users, tickets }) {
       const data = await res.json();
       console.log("data:", data);
     };
-
-    const [newTicket, setNewTicket] = useState({
-      title: "",
-      desc: "",
-      project: project.name,
-      status: "new",
-      type: "",
-      priority: "low",
-      submitter: user.nickname,
-      devs_assigned: [],
-    });
 
     const updateNewTicket = (event) => {
       setNewTicket({ ...newTicket, [event.target.name]: event.target.value });
@@ -226,13 +226,13 @@ function Project({ project, users, tickets }) {
                       </td>
                       <td className="p-2">{ticket.priority}</td>
                       <td className="p-2 hidden sm:table-cell">
-                        {ticket.created}
+                        {formatDate(ticket.created_at)}
                       </td>
                       <td className="p-2">
                         <Link
                           href={`/my_projects/${project.name}/${ticket._id}`}
                         >
-                          <a className="flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                          <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="h-6 w-6"
