@@ -4,6 +4,7 @@ import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import UserTableRow from "../../components/table/UserTableRow";
 import Link from "next/link";
+import { formatDate } from "../../utilities/formatDate";
 
 function Project({ project, users, tickets }) {
   const { user, error, isLoading } = useUser();
@@ -225,13 +226,13 @@ function Project({ project, users, tickets }) {
                       </td>
                       <td className="p-2">{ticket.priority}</td>
                       <td className="p-2 hidden sm:table-cell">
-                        {ticket.created}
+                        {formatDate(ticket.created_at)}
                       </td>
                       <td className="p-2">
                         <Link
                           href={`/my_projects/${project.name}/${ticket._id}`}
                         >
-                          <a className="flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                          <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="h-6 w-6"

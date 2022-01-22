@@ -5,22 +5,22 @@ import MultiSelect from "../../components/select/MultiSelect";
 import TableRow from "../../components/table/TableRow";
 
 function Index({ projects = [], users = [] }) {
+  const [ismodalOpen, setIsModalOpen] = useState(false);
+  const updateModalOpen = () => setIsModalOpen((modalOpen) => !modalOpen);
+
+  const [projectName, setProjectName] = useState("");
+  const updateProjectName = (event) => {
+    setProjectName(event.target.value);
+  };
+
+  const [assignedUsers, setAssignedUsers] = useState([]);
+
   const { user, error, isLoading } = useUser();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
   if (user) {
-    const [ismodalOpen, setIsModalOpen] = useState(false);
-    const updateModalOpen = () => setIsModalOpen((modalOpen) => !modalOpen);
-
-    const [projectName, setProjectName] = useState("");
-    const updateProjectName = (event) => {
-      setProjectName(event.target.value);
-    };
-
-    const [assignedUsers, setAssignedUsers] = useState([]);
-
     const formData = {
       name: projectName,
       owner: user.name,

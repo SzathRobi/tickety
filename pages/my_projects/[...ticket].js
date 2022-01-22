@@ -18,21 +18,12 @@ import { getBase64 } from "../../utilities/getBase64";
 function Ticket({ ticket, users, project }) {
   const { user, error, isLoading } = useUser();
 
-  const [ticketHistory, setTicketHistory] = useState(ticket.history);
-  const [history, setHistory] = useState(null);
-
   const [shouldModify, setShouldModify] = useState(false);
 
-  const [ticketTitle, setTicketTitle] = useState(ticket.title);
-  const [ticketDesc, setTicketDesc] = useState(ticket.desc);
-  const [ticketSubmitter, setTicketSubmitter] = useState(ticket.submitter);
   const [ticketDevsAssigned, setTicketDevsAssigned] = useState(
     ticket.devs_assigned
   );
-  const [ticketPriority, setTicketPriority] = useState(ticket.priority);
-  const [ticketStatus, setTicketStatus] = useState(ticket.status);
-  const [ticketProject, setTicketProject] = useState(ticket.project);
-  const [ticketType, setTicketType] = useState(ticket.type);
+
   const [ticketFiles, setTicketFiles] = useState(ticket.files);
   const [ticketFile, setTicketFile] = useState({});
   const [ticketFileDesc, setTicketFileDesc] = useState("");
@@ -64,14 +55,15 @@ function Ticket({ ticket, users, project }) {
 
   const [ticketData, setTicketData] = useState({
     ...ticket,
-    title: ticketTitle,
-    desc: ticketDesc,
-    submitter: ticketSubmitter,
-    devs_assigned: ticketDevsAssigned,
-    priority: ticketPriority,
-    status: ticketStatus,
-    project: ticketProject,
-    type: ticketType,
+    title: ticket.title,
+    desc: ticket.desc,
+    submitter: ticket.submitter,
+    devs_assigned: ticket.devs_assigned,
+    priority: ticket.priority,
+    status: ticket.status,
+    project: ticket.project,
+    type: ticket.type,
+    history: ticket.history,
   });
 
   const updateTicketData = (event) => {
@@ -161,11 +153,12 @@ function Ticket({ ticket, users, project }) {
         created_at: new Date().toISOString(),
       };
 
-      setTicketHistory(ticketHistory.concat(history));
+      setTicketData({
+        ...ticketData,
+        history: ticketData.history.concat(history),
+      });
 
-      ticketData[history] = ticketHistory;
-
-      updateData(`tickets/${ticket._id}`, ticketData);
+      // updateData(`tickets/${ticket._id}`, ticketData);
     };
 
     ///// feature - add comment to ticket //////
@@ -193,15 +186,20 @@ function Ticket({ ticket, users, project }) {
         {/******* DETAILS *******/}
         {successPopupOpen && <SuccessPopup msg={"Sikerlt yeeeeeee"} />}
         <div>
-          <Button onClick={() => toggleShouldModify(shouldModify)}>
-            MODIFY TICKET
-          </Button>
-          <Button
-            onClick={() => saveChanges()}
-            className="py-2 px-4 text-white text-sm bg-blue-400 transition-all "
-          >
-            SAVE CHANGES
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => toggleShouldModify(shouldModify)}>
+              MODIFY TICKET
+            </Button>
+            <Button
+              onClick={() => saveChanges()}
+              className={`py-2 px-4 text-white text-sm transition-all ${
+                shouldModify ? "bg-blue-400" : "bg-blue-200"
+              }`}
+              disabled={!shouldModify}
+            >
+              SAVE CHANGES
+            </Button>
+          </div>
           <h2 className="bg-teal-200 mt-2 p-2 text-xl font-medium">
             Details for ticket
           </h2>
@@ -228,11 +226,7 @@ function Ticket({ ticket, users, project }) {
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Submitter</h3>
-              <Input
-                type="text"
-                value={ticketData.submitter}
-                disabled={shouldModify === false}
-              />
+              <Input type="text" value={ticketData.submitter} disabled={true} />
             </div>
             <div className="p-2 border-b-2 border-gray-400">
               <h3 className="font-medium">Assigned Developers</h3>
@@ -336,7 +330,7 @@ function Ticket({ ticket, users, project }) {
               "New Value",
               "Updated",
             ]}
-            tableDatas={ticketHistory}
+            tableDatas={ticketData.history}
           />
         </div>
         {/** !!!!!!!!!!!!  TICKET FILES  !!!!!!!!!!!! */}
