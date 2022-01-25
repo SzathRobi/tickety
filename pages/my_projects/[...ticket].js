@@ -158,7 +158,7 @@ function Ticket({ ticket, users, project }) {
         history: ticketData.history.concat(history),
       });
 
-      // updateData(`tickets/${ticket._id}`, ticketData);
+      updateData(`tickets/${ticket._id}`, ticketData);
     };
 
     ///// feature - add comment to ticket //////
@@ -182,7 +182,7 @@ function Ticket({ ticket, users, project }) {
     };
 
     return (
-      <section className="p-4 md:pl-20 md:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <section className="p-4 md:pl-20 pt-20 grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/******* DETAILS *******/}
         {successPopupOpen && <SuccessPopup msg={"Sikerlt yeeeeeee"} />}
         <div>
@@ -337,7 +337,7 @@ function Ticket({ ticket, users, project }) {
         <div>
           <div className="mb-4">
             <h3>Add Attachment</h3>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2 md:flex-row">
               <label>
                 <p>Select File</p>
                 <input

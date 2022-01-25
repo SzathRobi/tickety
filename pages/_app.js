@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0";
 import { HeaderWrapper } from "../contexts/headerContext";
 import TopNavigation from "../components/navs/TopNavigation";
-import SideNavigation from "../components/SideNavigation";
+import SideNavigation from "../components/navs/SideNavigation";
 import { useState } from "react/cjs/react.development";
 
 function MyApp({ Component, pageProps }) {
