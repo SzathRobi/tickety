@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "../../components/controls/Button";
+import ManageUsersTableRow from "../../components/table/ManageUsersTableRow";
 
 function Index({ users, projects }) {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -9,6 +10,7 @@ function Index({ users, projects }) {
     );
   };
   const [avaibleUsers, setAvaibleUsers] = useState(null);
+  const [assignedUsers, setAssignedUsers] = useState(null);
   useEffect(() => {
     const filteredUsers = [];
     users.map((user) => {
@@ -17,10 +19,52 @@ function Index({ users, projects }) {
         : filteredUsers.push(user);
     });
     selectedProject && setAvaibleUsers(filteredUsers);
+    selectedProject && setAssignedUsers(selectedProject.devs_assigned);
   }, [selectedProject]);
-  /**/
 
-  const [assignedUsers, setAssignedUsers] = useState(null);
+  const [avaibleSelectedUsers, setAvaibleSelectedUsers] = useState([]);
+  const addAvaibleSelectedUsers = (user) => {
+    setAvaibleSelectedUsers(avaibleSelectedUsers.concat(user));
+  };
+
+  const removeAvaibleSelectedUsers = (user) => {
+    const removedUsers = avaibleSelectedUsers.filter(
+      (avaibleSelectedUser) => avaibleSelectedUser !== user
+    );
+    setAvaibleSelectedUsers(removedUsers);
+  };
+
+  const assignUsers = () => {
+    setAvaibleUsers(
+      avaibleUsers.filter(
+        (avaibleUser) => !avaibleSelectedUsers.includes(avaibleUser)
+      )
+    );
+    setAssignedUsers(assignedUsers.concat(avaibleSelectedUsers));
+  };
+
+  ////////////////////////
+
+  const [assignedSelectedUsers, setAssignedSelectedUsers] = useState([]);
+  const addAssignedSelectedUsers = (user) => {
+    setAssignedSelectedUsers(assignedSelectedUsers.concat(user));
+  };
+
+  const removeAssignedSelectedUsers = (user) => {
+    const removedUsers = assignedSelectedUsers.filter(
+      (assignedSelectedUser) => assignedSelectedUser !== user
+    );
+    setAssignedSelectedUsers(removedUsers);
+  };
+
+  const removeUsers = () => {
+    setAssignedUsers(
+      assignedUsers.filter(
+        (assignedUser) => !assignedSelectedUsers.includes(assignedUser)
+      )
+    );
+    setAvaibleUsers(avaibleUsers.concat(assignedSelectedUsers));
+  };
 
   return (
     <main className="p-4 md:pl-20 pt-20">
@@ -52,19 +96,16 @@ function Index({ users, projects }) {
             <tbody>
               {avaibleUsers &&
                 avaibleUsers.map((user) => (
-                  <tr key={user._id} className="even:bg-gray-200">
-                    <td className="px-2 py-1">{user?.email || "none"}</td>
-                    <td className="px-2 py-1">
-                      {user?.user_metadata?.role || ""}
-                    </td>
-                    <td className="text-right px-2 py-1">
-                      <input type="checkbox" />
-                    </td>
-                  </tr>
+                  <ManageUsersTableRow
+                    key={user._id}
+                    user={user}
+                    addAvaibleSelectedUsers={addAvaibleSelectedUsers}
+                    removeAvaibleSelectedUsers={removeAvaibleSelectedUsers}
+                  />
                 ))}
             </tbody>
           </table>
-          <Button>ASSIGN USER</Button>
+          <Button onClick={assignUsers}>ASSIGN USER</Button>
         </div>
         <div className="flex flex-col items-start justify-between">
           <table className="w-full">
@@ -76,19 +117,18 @@ function Index({ users, projects }) {
               </tr>
             </thead>
             <tbody>
-              {selectedProject &&
-                selectedProject.devs_assigned.map((dev) => (
-                  <tr key={dev._id} className="even:bg-gray-200">
-                    <td className="px-2 py-1">{dev?.email || dev?.name}</td>
-                    <td className="px-2 py-1">{dev?.user_metadata?.role}</td>
-                    <td className="text-right px-2 py-1">
-                      <input type="checkbox" />
-                    </td>
-                  </tr>
+              {assignedUsers &&
+                assignedUsers.map((dev) => (
+                  <ManageUsersTableRow
+                    key={dev._id}
+                    user={dev}
+                    addAssignedSelectedUsers={addAssignedSelectedUsers}
+                    removeAssignedSelectedUsers={removeAssignedSelectedUsers}
+                  />
                 ))}
             </tbody>
           </table>
-          <Button>REMOVE USER</Button>
+          <Button onClick={removeUsers}>REMOVE USER</Button>
         </div>
       </div>
     </main>
