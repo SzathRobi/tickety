@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const MetadataSchema = new mongoose.Schema({
+  role: {
+    type: String,
+    default: "",
+  },
+});
+
 const UserSchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -21,6 +28,11 @@ const UserSchema = new mongoose.Schema({
   },
   email_verified: {
     type: Boolean,
+  },
+  user_metadata: MetadataSchema,
+  created_at: {
+    type: Date,
+    default: Date.now(),
   },
 });
 

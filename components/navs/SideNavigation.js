@@ -3,7 +3,7 @@ import Link from "next/link";
 function SideNavigation({ isNavOpen }) {
   return (
     <aside
-      className={`bg-teal-800 h-full text-white transition-all duration-300 pt-20 fixed z-10 top-0 md:-left-44 hover:md:-left-0 ${
+      className={`bg-teal-800 h-full text-white transition-all duration-300 pt-20 fixed z-10 top-0 md:-left-32 hover:md:-left-0 ${
         isNavOpen ? "left-0" : "-left-60"
       }`}
     >
@@ -11,7 +11,7 @@ function SideNavigation({ isNavOpen }) {
         <ul>
           <li className="hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
             <Link href="/">
-              <a className="flex justify-between items-center gap-4">
+              <a className="flex justify-between items-center gap-6">
                 <span className="flex-1">Dashboard</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -36,27 +36,10 @@ function SideNavigation({ isNavOpen }) {
               </a>
             </Link>
           </li>
-          <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
-            <p>Manage Roles</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-              />
-            </svg>
-          </li>
-          <li className="flex justify-between items-center gap-4 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
-            <Link href="/manage_project_users">
-              <a className="flex justify-between items-center gap-4">
-                <span className="flex-1">Manage Project Users</span>{" "}
+          <li className="flex justify-between items-center gap-6 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
+            <Link href="/manage_users">
+              <a className="flex justify-between items-center gap-6">
+                <span className="flex-1">Manage Users</span>{" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -76,7 +59,7 @@ function SideNavigation({ isNavOpen }) {
           </li>
           <li className="hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
             <Link href="/my_projects">
-              <a className="flex justify-between items-center gap-4">
+              <a className="flex justify-between items-center gap-6">
                 <span className="flex-1">My Projects</span>{" "}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
