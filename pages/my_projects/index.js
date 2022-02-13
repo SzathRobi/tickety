@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import MultiSelect from "../../components/select/MultiSelect";
 import TableRow from "../../components/table/TableRow";
+import UserContext from "../../contexts/userContext";
 
 function Index({ projects = [], users = [] }) {
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,15 @@ function Index({ projects = [], users = [] }) {
   const [assignedUsers, setAssignedUsers] = useState([]);
 
   const { user, error, isLoading } = useUser();
+  console.log("user:", user);
+  const { dbUser } = useContext(UserContext);
+
+  const [myProjects, setMyProjects] = useState(
+    projects.data.filter((project) =>
+      project.devs_assigned.some((dev) => dev.email === user.name)
+    )
+  );
+  console.log("myProjects:", myProjects);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -38,13 +48,15 @@ function Index({ projects = [], users = [] }) {
     };
 
     return (
-      <section className="p-4 md:pl-20 md:py-6">
-        <button
-          onClick={() => updateModalOpen()}
-          className="rounded mb-8 py-2 px-4 text-white bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
-        >
-          CREATE NEW PROJECT
-        </button>
+      <section className="p-4 pt-16 md:pl-20">
+        {dbUser?.user_metadata?.role === "project_manager" && (
+          <button
+            onClick={() => updateModalOpen()}
+            className="rounded mb-8 py-2 px-4 text-white bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
+          >
+            CREATE NEW PROJECT
+          </button>
+        )}
         <table className="w-full table-auto text-left">
           <thead className="bg-teal-200">
             <tr>
@@ -54,9 +66,23 @@ function Index({ projects = [], users = [] }) {
             </tr>
           </thead>
           <tbody>
-            {projects.data.map((project) => (
-              <TableRow key={project.id} project={project} />
-            ))}
+            {dbUser?.user_metadata?.role === "project_manager" ? (
+              projects.data.map((project) => (
+                <TableRow key={project.id} project={project} />
+              ))
+            ) : myProjects.length !== 0 ? (
+              myProjects.map((project) => (
+                <TableRow key={project.id} project={project} />
+              ))
+            ) : (
+              <tr>
+                <td>
+                  <p className="translate-x-1/3 p-4 text-center mt-4">
+                    Currently No Project
+                  </p>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         <Modal isOpen={ismodalOpen} updateIsOpen={updateModalOpen}>

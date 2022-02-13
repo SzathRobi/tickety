@@ -1,38 +1,44 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import UserContext from "../../contexts/userContext";
 
 function UserTableRow({ user, removeUsersFromProject }) {
-  const [isPopupOpen, setIsPopUpOpen] = useState(false);
-  const togglePopupOpen = () => setIsPopUpOpen(!isPopupOpen);
+  //const [isPopupOpen, setIsPopUpOpen] = useState(false);
+  //  const togglePopupOpen = () => setIsPopUpOpen(!isPopupOpen);
 
-  const [rolePopupOpen, setRolePopupOpen] = useState(false);
-  const toggleRolePopupOpen = () => setRolePopupOpen(!rolePopupOpen);
+  //const [rolePopupOpen, setRolePopupOpen] = useState(false);
+  //const toggleRolePopupOpen = () => setRolePopupOpen(!rolePopupOpen);
+  const { dbUser } = useContext(UserContext);
   return (
     <tr className="border-b-4 border-stone-400" key={user.email}>
       <td className="p-1">{user.email}</td>
-      <td className="p-1">Demo Dev</td>
+      <td className="p-1">
+        {user?.user_metadata?.role ? user.user_metadata.role : "not assigned"}
+      </td>
       <td className="p-1 relative">
         <div className="relative">
-          <button
-            onClick={() => togglePopupOpen()}
-            className="relative ml-auto flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {dbUser?.user_metadata?.role === "project_manager" && (
+            <button
+              onClick={() => removeUsersFromProject(user)}
+              className="relative ml-auto flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          )}
           {/*Options Popup menu */}
-          <div
+          {/*<div
             className={`${
               isPopupOpen ? "block" : "hidden"
             } rounded overflow-hidden absolute top-0 right-10 w-32 bg-neutral-500 text-white`}
@@ -78,7 +84,9 @@ function UserTableRow({ user, removeUsersFromProject }) {
               </svg>
             </button>
           </div>
+          */}
           {/*Role Popup menu */}
+          {/* 
           <div
             className={`${
               rolePopupOpen ? "block" : "hidden"
@@ -154,6 +162,7 @@ function UserTableRow({ user, removeUsersFromProject }) {
               </svg>
             </div>
           </div>
+          */}
         </div>
       </td>
     </tr>

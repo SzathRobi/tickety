@@ -4,6 +4,9 @@ import Link from "next/link";
 import dbConnect from "../lib/dbConnect";
 import "chart.js/auto";
 import InfoCard from "../components/dashboard/InfoCard";
+import { useContext } from "react";
+import { useEffect } from "react/cjs/react.development";
+import UserContext from "../contexts/userContext";
 //import { ticketStatusData } from "../utilities/chartDatas";
 
 /**
@@ -12,18 +15,23 @@ import InfoCard from "../components/dashboard/InfoCard";
 
 function Home({ tickets, users }) {
   const { user, error, isLoading } = useUser();
+  const { dbUser, setDbUser } = useContext(UserContext);
   //console.log(user);
   //console.log(tickets);
-
   const myUser = users.find((dbUser) => dbUser.email === user.name);
+  useEffect(() => {
+    setDbUser(myUser);
+  }, [myUser]);
 
   const sentTicketsByMe = tickets.filter(
     (ticket) => ticket.submitter === user.nickname
   );
 
   const assignedTickets = tickets.filter((ticket) =>
-    ticket.devs_assigned.some((dev) => dev === user.name)
+    ticket.devs_assigned.includes(user.name)
   );
+
+  console.log("assignedTickets:", assignedTickets);
 
   //Tickets By Priority
   const lowTickets = tickets.filter((ticket) => ticket.priority === "low");
@@ -156,7 +164,7 @@ function Home({ tickets, users }) {
               myUser?.user_metadata?.role === "submitter"
                 ? needMoreInfoTickets.length
                 : myUser?.user_metadata?.role === "developer"
-                ? criticalTickets.length
+                ? assignedTickets.length
                 : myUser?.user_metadata?.role === "project_manager"
                 ? needMoreInfoTickets.length
                 : "error"

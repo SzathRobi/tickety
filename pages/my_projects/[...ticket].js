@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0";
 
 import Input from "../../components/controls/Input";
@@ -14,9 +14,12 @@ import { findObjectsDiffs } from "../../utilities/findObjectsDiffs";
 import { formatDate } from "../../utilities/formatDate";
 import { updateData } from "../../utilities/updateData";
 import { getBase64 } from "../../utilities/getBase64";
+import UserContext from "../../contexts/userContext";
 
 function Ticket({ ticket, users, project }) {
   const { user, error, isLoading } = useUser();
+  const { dbUser } = useContext(UserContext);
+  console.log(dbUser);
 
   const [shouldModify, setShouldModify] = useState(false);
 
@@ -192,9 +195,7 @@ function Ticket({ ticket, users, project }) {
             </Button>
             <Button
               onClick={() => saveChanges()}
-              className={`py-2 px-4 text-white text-sm transition-all ${
-                shouldModify ? "bg-blue-400" : "bg-blue-200"
-              }`}
+              className={`py-2 px-4 text-white text-sm transition-all`}
               disabled={!shouldModify}
             >
               SAVE CHANGES
@@ -233,7 +234,10 @@ function Ticket({ ticket, users, project }) {
               <MultiSelect
                 headerValue={ticketDevsAssigned}
                 optionsValue={project[0].devs_assigned}
-                canOpen={shouldModify}
+                canOpen={
+                  shouldModify &&
+                  dbUser?.user_metadata?.role === "project_manager"
+                }
                 onClick={{ addDevs, removeDevs }}
                 setTicketDevsAssigned={setTicketDevsAssigned}
                 ticketDevsAssigned={ticketDevsAssigned}
@@ -246,7 +250,10 @@ function Ticket({ ticket, users, project }) {
                 name="priority"
                 defaultValue={ticketData.priority}
                 onChange={(event) => updateTicketData(event)}
-                disabled={shouldModify === false}
+                disabled={
+                  shouldModify === false ||
+                  dbUser?.user_metadata?.role === "submitter"
+                }
               >
                 <Option value="low">Low</Option>
                 <Option value="medium">Medium</Option>
@@ -260,7 +267,10 @@ function Ticket({ ticket, users, project }) {
                 value={ticketData.status}
                 name="status"
                 onChange={(event) => updateTicketData(event)}
-                disabled={shouldModify === false}
+                disabled={
+                  shouldModify === false ||
+                  dbUser?.user_metadata?.role === "submitter"
+                }
               >
                 <Option value="new">New</Option>
                 <Option value="open">Open</Option>
@@ -337,7 +347,7 @@ function Ticket({ ticket, users, project }) {
         <div>
           <div className="mb-4">
             <h3>Add Attachment</h3>
-            <div className="flex flex-col gap-2 md:flex-row">
+            <div className="flex flex-col gap-2">
               <label>
                 <p>Select File</p>
                 <input
@@ -346,7 +356,6 @@ function Ticket({ ticket, users, project }) {
                   onChange={(event) => selectImg(event)}
                 />
               </label>
-              <img src={imgSrc} alt="sg" />
               <label>
                 <h6>Add Description</h6>
                 <Input
@@ -355,7 +364,7 @@ function Ticket({ ticket, users, project }) {
                   onChange={(event) => updateTicketFileDesc(event)}
                 />
               </label>
-              <Button onClick={() => uploadImg()}>
+              <Button onClick={() => uploadImg()} style={{ maxWidth: "10rem" }}>
                 <span>UPLOAD FILE</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
