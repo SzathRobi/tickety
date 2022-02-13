@@ -5,7 +5,7 @@ import ManageUsersTableRow from "../../components/table/ManageUsersTableRow";
 import RoleTableRow from "../../components/table/RoleTableRow";
 import { formatDate } from "../../utilities/formatDate";
 
-function Index({ users, projects }) {
+function Index({ users = [], projects = [] }) {
   console.log(users);
   const [selectedProject, setSelectedProject] = useState(null);
   const updateSelectedProject = (event) => {

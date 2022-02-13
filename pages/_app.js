@@ -6,7 +6,7 @@ import TopNavigation from "../components/navs/TopNavigation";
 import SideNavigation from "../components/navs/SideNavigation";
 import { useState } from "react";
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component = null, pageProps = null }) {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const toggleNavOpen = () => {
     setIsNavOpen((isNavOpen) => !isNavOpen);

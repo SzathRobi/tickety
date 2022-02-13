@@ -16,7 +16,7 @@ import { updateData } from "../../utilities/updateData";
 import { getBase64 } from "../../utilities/getBase64";
 import UserContext from "../../contexts/userContext";
 
-function Ticket({ ticket, users, project }) {
+function Ticket({ ticket = {}, users = [], project = [] }) {
   const { user, error, isLoading } = useUser();
   const { dbUser } = useContext(UserContext);
   console.log(dbUser);

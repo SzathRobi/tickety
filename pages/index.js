@@ -13,7 +13,7 @@ import UserContext from "../contexts/userContext";
  * use myUser for role checking, auth0 fucked up with metadata
  */
 
-function Home({ tickets, users }) {
+function Home({ tickets = [], users = [] }) {
   const { user, error, isLoading } = useUser();
   const { dbUser, setDbUser } = useContext(UserContext);
   //console.log(user);

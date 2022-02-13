@@ -2,7 +2,7 @@ import React from "react";
 import { useUser } from "@auth0/nextjs-auth0";
 import Link from "next/link";
 import { formatDate } from "../../utilities/formatDate";
-function Index({ tickets }) {
+function Index({ tickets = [] }) {
   const { user, error, isLoading } = useUser();
 
   if (isLoading) return <div>Loading...</div>;

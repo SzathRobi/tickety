@@ -1,7 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0";
 import Link from "next/link";
-import { useContext } from "react";
-import { useEffect } from "react/cjs/react.development";
+import { useContext, useEffect } from "react";
 import UserContext from "../../contexts/userContext";
 
 function SideNavigation({ isNavOpen }) {

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { formatDate } from "../../utilities/formatDate";
 import UserContext from "../../contexts/userContext";
 
-function Project({ project, users, tickets }) {
+function Project({ project = {}, users = [], tickets = [] }) {
   const { user, error, isLoading } = useUser();
   const { dbUser } = useContext(UserContext);
 
