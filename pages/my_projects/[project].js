@@ -1,13 +1,15 @@
 //import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import UserTableRow from "../../components/table/UserTableRow";
 import Link from "next/link";
 import { formatDate } from "../../utilities/formatDate";
+import UserContext from "../../contexts/userContext";
 
 function Project({ project, users, tickets }) {
   const { user, error, isLoading } = useUser();
+  const { dbUser } = useContext(UserContext);
 
   const [descShown, setDescShown] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
@@ -37,7 +39,7 @@ function Project({ project, users, tickets }) {
       setIsTicketModalOpen((isTicketModalOpen) => !isTicketModalOpen);
 
     const assignNewUser = (user) => {
-      setAssignedUsers([...assignedUsers, user]);
+      setAssignedUsers(assignedUsers.concat(user));
       console.log("assignedUsers:", assignedUsers);
     };
     const assignUsersToProject = async () => {
@@ -86,7 +88,7 @@ function Project({ project, users, tickets }) {
     };
 
     return (
-      <section className="p-4 md:pl-16">
+      <section className="p-4 pt-16 md:pl-16">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6 md:flex-row md:justify-start">
             <h1 className="text-3xl">{project.name}</h1>
@@ -121,17 +123,19 @@ function Project({ project, users, tickets }) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col lg:flex-row justify-between gap-6">
-            <div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1">
               <h2 className="text-xl font-semibold px-2 py-4 rounded bg-teal-200">
                 Current devs in this project
               </h2>
-              <button
-                onClick={() => toggleUserModalOpen()}
-                className="rounded my-2 py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
-              >
-                ADD NEW USER
-              </button>
+              {dbUser?.user_metadata?.role === "project_manager" && (
+                <button
+                  onClick={() => toggleUserModalOpen()}
+                  className="rounded my-2 py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
+                >
+                  ADD NEW USER
+                </button>
+              )}
               <table className="w-full table-auto text-left">
                 <thead className="bg-gray-100">
                   <tr>
@@ -171,7 +175,14 @@ function Project({ project, users, tickets }) {
                       >
                         <label className="cursor-pointer p-4 flex justify-between items-center gap-4">
                           <p>{user.email}</p>
-                          <input type="checkbox" className="cursor-pointer" />
+                          <input
+                            type="checkbox"
+                            className="cursor-pointer"
+                            checked={assignedUsers.some(
+                              (assignedUser) =>
+                                assignedUser.email === user.email
+                            )}
+                          />
                         </label>
                       </li>
                     );
@@ -188,7 +199,7 @@ function Project({ project, users, tickets }) {
 
             {/*//////////////////////////////////////////////////////////////////////////*/}
 
-            <div>
+            <div className="flex-1">
               <h2 className="text-xl font-semibold px-2 py-4 rounded bg-teal-200">
                 Tickets for this projects
               </h2>

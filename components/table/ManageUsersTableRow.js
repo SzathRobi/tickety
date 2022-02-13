@@ -22,7 +22,7 @@ function ManageUsersTableRow({
   return (
     <tr key={user._id} className="even:bg-gray-200">
       <td className="px-2 py-1">{user?.email || "error"}</td>
-      <td className="px-2 py-1">{user?.user_metadata?.role || ""}</td>
+      <td className="px-2 py-1">{user?.user_metadata?.role ?? "developer"}</td>
       <td className="text-right px-2 py-1">
         <input type="checkbox" checked={checked} onChange={toggleChecked} />
       </td>

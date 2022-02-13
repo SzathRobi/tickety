@@ -1,9 +1,19 @@
+import { useUser } from "@auth0/nextjs-auth0";
 import Link from "next/link";
+import { useContext } from "react";
+import { useEffect } from "react/cjs/react.development";
+import UserContext from "../../contexts/userContext";
 
 function SideNavigation({ isNavOpen }) {
+  //const { user, error, isLoading } = useUser();
+  const { dbUser, setDbUser } = useContext(UserContext);
+  useEffect(() => {
+    console.log("dbUser from context:", dbUser);
+  }, [dbUser]);
+
   return (
     <aside
-      className={`bg-teal-800 h-full text-white transition-all duration-300 pt-20 fixed z-10 top-0 md:-left-32 hover:md:-left-0 ${
+      className={`bg-teal-800 h-full w-44 text-white transition-all duration-300 pt-20 fixed z-10 top-0 md:-left-32 hover:md:-left-0 ${
         isNavOpen ? "left-0" : "-left-60"
       }`}
     >
@@ -36,27 +46,29 @@ function SideNavigation({ isNavOpen }) {
               </a>
             </Link>
           </li>
-          <li className="flex justify-between items-center gap-6 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
-            <Link href="/manage_users">
-              <a className="flex justify-between items-center gap-6">
-                <span className="flex-1">Manage Users</span>{" "}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </a>
-            </Link>
-          </li>
+          {dbUser?.user_metadata?.role === "project_manager" && (
+            <li className="flex justify-between items-center gap-6 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
+              <Link href="/manage_users">
+                <a className="flex justify-between items-center gap-6">
+                  <span className="flex-1">Manage Users</span>{" "}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </a>
+              </Link>
+            </li>
+          )}
           <li className="hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
             <Link href="/my_projects">
               <a className="flex justify-between items-center gap-6">
