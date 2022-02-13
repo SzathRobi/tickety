@@ -4,8 +4,7 @@ import Link from "next/link";
 import dbConnect from "../lib/dbConnect";
 import "chart.js/auto";
 import InfoCard from "../components/dashboard/InfoCard";
-import { useContext } from "react";
-import { useEffect } from "react/cjs/react.development";
+import { useContext, useEffect } from "react";
 import UserContext from "../contexts/userContext";
 //import { ticketStatusData } from "../utilities/chartDatas";
 
