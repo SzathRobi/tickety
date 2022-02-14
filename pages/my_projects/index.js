@@ -18,7 +18,7 @@ function Index({ projects = [], users = [] }) {
 
   const { user, error, isLoading } = useUser();
   console.log("user:", user);
-  const { dbUser } = useContext(UserContext);
+  // const { dbUser } = useContext(UserContext);
 
   const [myProjects, setMyProjects] = useState(
     projects.data.filter((project) =>
@@ -49,7 +49,7 @@ function Index({ projects = [], users = [] }) {
 
     return (
       <section className="p-4 pt-16 md:pl-20">
-        {dbUser?.user_metadata?.role === "project_manager" && (
+        {user && user["https://tickety.vercel.app/role"] === "project_manager" && (
           <button
             onClick={() => updateModalOpen()}
             className="rounded mb-8 py-2 px-4 text-white bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
@@ -66,7 +66,8 @@ function Index({ projects = [], users = [] }) {
             </tr>
           </thead>
           <tbody>
-            {dbUser?.user_metadata?.role === "project_manager" ? (
+            {user &&
+            user["https://tickety.vercel.app/role"] === "project_manager" ? (
               projects.data.map((project) => (
                 <TableRow key={project.id} project={project} />
               ))
