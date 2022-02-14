@@ -14,7 +14,8 @@ import UserContext from "../contexts/userContext";
 
 function Home({ tickets = [], users = [] }) {
   const { user, error, isLoading } = useUser();
-  console.log("auth_user:", user);
+  console.log("auth_user:", user["https://tickety.vercel.app/role"]);
+
   const { dbUser, setDbUser } = useContext(UserContext);
   //console.log(user);
   //console.log(tickets);
@@ -152,40 +153,40 @@ function Home({ tickets = [], users = [] }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16">
           <InfoCard
             text={
-              myUser?.user_metadata?.role === "submitter"
+              user["https://tickety.vercel.app/role"] === "submitter"
                 ? "Tickets That Need More Info"
-                : myUser?.user_metadata?.role === "developer"
+                : user["https://tickety.vercel.app/role"] === "developer"
                 ? "Tickets Assigned To Me"
-                : myUser?.user_metadata?.role === "project_manager"
+                : user["https://tickety.vercel.app/role"] === "project_manager"
                 ? "Tickets That Need More Info"
                 : "Tickets That Need More Info"
             }
             data={
-              myUser?.user_metadata?.role === "submitter"
+              user["https://tickety.vercel.app/role"] === "submitter"
                 ? needMoreInfoTickets.length
-                : myUser?.user_metadata?.role === "developer"
+                : user["https://tickety.vercel.app/role"] === "developer"
                 ? assignedTickets.length
-                : myUser?.user_metadata?.role === "project_manager"
+                : user["https://tickety.vercel.app/role"] === "project_manager"
                 ? needMoreInfoTickets.length
                 : needMoreInfoTickets.length
             }
           />
           <InfoCard
             text={
-              myUser?.user_metadata?.role === "submitter"
+              user["https://tickety.vercel.app/role"] === "submitter"
                 ? "Sent Tickets By Me"
-                : myUser?.user_metadata?.role === "developer"
+                : user["https://tickety.vercel.app/role"] === "developer"
                 ? "Critical tickets"
-                : myUser?.user_metadata?.role === "project_manager"
+                : user["https://tickety.vercel.app/role"] === "project_manager"
                 ? "New Tickets"
                 : "New Tickets"
             }
             data={
-              myUser?.user_metadata?.role === "submitter"
+              user["https://tickety.vercel.app/role"] === "submitter"
                 ? sentTicketsByMe.length
-                : myUser?.user_metadata?.role === "developer"
+                : user["https://tickety.vercel.app/role"] === "developer"
                 ? assignedTickets.length
-                : myUser?.user_metadata?.role === "project_manager"
+                : user["https://tickety.vercel.app/role"] === "project_manager"
                 ? newTickets.length
                 : newTickets.length
             }

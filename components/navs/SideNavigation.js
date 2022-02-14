@@ -4,11 +4,14 @@ import { useContext, useEffect } from "react";
 import UserContext from "../../contexts/userContext";
 
 function SideNavigation({ isNavOpen }) {
-  //const { user, error, isLoading } = useUser();
-  const { dbUser } = useContext(UserContext);
+  const { user, error, isLoading } = useUser();
+  /* const { dbUser } = useContext(UserContext);
   useEffect(() => {
     console.log("dbUser from context:", dbUser);
   }, [dbUser]);
+*/
+
+  console.log("user in sideNav:", user["https://tickety.vercel.app/role"]);
 
   return (
     <aside
@@ -45,7 +48,7 @@ function SideNavigation({ isNavOpen }) {
               </a>
             </Link>
           </li>
-          {dbUser?.user_metadata?.role === "project_manager" && (
+          {user["https://tickety.vercel.app/role"] === "project_manager" && (
             <li className="flex justify-between items-center gap-6 hover:cursor-pointer my-3 p-4 transition-all duration-300 hover:bg-teal-900">
               <Link href="/manage_users">
                 <a className="flex justify-between items-center gap-6">
