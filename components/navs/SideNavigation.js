@@ -5,7 +5,7 @@ import UserContext from "../../contexts/userContext";
 
 function SideNavigation({ isNavOpen }) {
   //const { user, error, isLoading } = useUser();
-  const { dbUser, setDbUser } = useContext(UserContext);
+  const { dbUser } = useContext(UserContext);
   useEffect(() => {
     console.log("dbUser from context:", dbUser);
   }, [dbUser]);

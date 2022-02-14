@@ -14,13 +14,14 @@ import UserContext from "../contexts/userContext";
 
 function Home({ tickets = [], users = [] }) {
   const { user, error, isLoading } = useUser();
+  console.log("auth_user:", user);
   const { dbUser, setDbUser } = useContext(UserContext);
   //console.log(user);
   //console.log(tickets);
   const myUser = users.find((dbUser) => dbUser.email === user.name);
   useEffect(() => {
     setDbUser(myUser);
-  }, [myUser]);
+  }, [user]);
 
   const sentTicketsByMe = tickets.filter(
     (ticket) => ticket.submitter === user.nickname
