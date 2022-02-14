@@ -157,7 +157,7 @@ function Home({ tickets = [], users = [] }) {
                 ? "Tickets Assigned To Me"
                 : myUser?.user_metadata?.role === "project_manager"
                 ? "Tickets That Need More Info"
-                : "error"
+                : "Tickets That Need More Info"
             }
             data={
               myUser?.user_metadata?.role === "submitter"
@@ -166,7 +166,7 @@ function Home({ tickets = [], users = [] }) {
                 ? assignedTickets.length
                 : myUser?.user_metadata?.role === "project_manager"
                 ? needMoreInfoTickets.length
-                : "error"
+                : needMoreInfoTickets.length
             }
           />
           <InfoCard
@@ -177,7 +177,7 @@ function Home({ tickets = [], users = [] }) {
                 ? "Critical tickets"
                 : myUser?.user_metadata?.role === "project_manager"
                 ? "New Tickets"
-                : "error"
+                : "New Tickets"
             }
             data={
               myUser?.user_metadata?.role === "submitter"
@@ -186,7 +186,7 @@ function Home({ tickets = [], users = [] }) {
                 ? assignedTickets.length
                 : myUser?.user_metadata?.role === "project_manager"
                 ? newTickets.length
-                : "error"
+                : newTickets.length
             }
           />
           <InfoCard text="Total Tickets" data={tickets.length} />
@@ -214,11 +214,6 @@ function Home({ tickets = [], users = [] }) {
 
 export async function getServerSideProps(context) {
   try {
-    // client.db() will be the default database passed in the MONGODB_URI
-    // You can change the database by calling the client.db() function and specifying a database like:
-    // const db = client.db("myDatabase");
-    // Then you can execute queries against your database like so:
-    // db.find({}) or any of the MongoDB Node Driver commands
     await dbConnect();
     const ticketRes = await fetch("http://localhost:3000/api/tickets");
     const tickets = await ticketRes.json();
