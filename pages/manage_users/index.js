@@ -182,10 +182,15 @@ function Index({ users = [], projects = [] }) {
 }
 
 export async function getServerSideProps() {
-  const userRes = await fetch("http://localhost:3000/api/users");
+  const userRes = await fetch(
+    `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users"
+  );
   const users = await userRes.json();
 
-  const projectsRes = await fetch("http://localhost:3000/api/projects");
+  const projectsRes = await fetch(
+    `${process.env?.SITE_URL}/api/projects` ||
+      "http://localhost:3000/api/projects"
+  );
   const projects = await projectsRes.json();
   return {
     props: { users: users.data, projects: projects.data },

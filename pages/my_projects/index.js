@@ -113,12 +113,18 @@ function Index({ projects = [], users = [] }) {
 }
 
 export async function getServerSideProps(context) {
-  const projectRes = await fetch("http://localhost:3000/api/projects", {
-    method: "GET",
-  });
+  const projectRes = await fetch(
+    `${process.env?.SITE_URL}/api/projects` ||
+      "http://localhost:3000/api/projects",
+    {
+      method: "GET",
+    }
+  );
   const projects = await projectRes.json();
 
-  const usersRes = await fetch("http://localhost:3000/api/users");
+  const usersRes = await fetch(
+    `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users"
+  );
   const users = await usersRes.json();
 
   return {

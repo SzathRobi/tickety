@@ -336,21 +336,29 @@ function Project({ project = {}, users = [], tickets = [] }) {
 export async function getServerSideProps({ params }) {
   const project_name = params.project;
   const projectRes = await fetch(
-    `http://localhost:3000/api/projects/${project_name}`,
+    `${process.env?.SITE_URL}/api/projects/${project_name}` ||
+      `http://localhost:3000/api/projects/${project_name}`,
     {
       method: "GET",
     }
   );
   const project = await projectRes.json();
 
-  const usersRes = await fetch("http://localhost:3000/api/users", {
-    method: "GET",
-  });
+  const usersRes = await fetch(
+    `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users",
+    {
+      method: "GET",
+    }
+  );
   const users = await usersRes.json();
 
-  const ticketsRes = await fetch("http://localhost:3000/api/tickets", {
-    method: "GET",
-  });
+  const ticketsRes = await fetch(
+    `${process.env?.SITE_URL}/api/tickets` ||
+      "http://localhost:3000/api/tickets",
+    {
+      method: "GET",
+    }
+  );
   const tickets = await ticketsRes.json();
 
   return {

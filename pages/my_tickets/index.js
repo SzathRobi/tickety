@@ -75,9 +75,13 @@ function Index({ tickets = [] }) {
 }
 
 export async function getServerSideProps() {
-  const ticketRes = await fetch("http://localhost:3000/api/tickets", {
-    method: "GET",
-  });
+  const ticketRes = await fetch(
+    `${process.env?.SITE_URL}/api/tickets` ||
+      "http://localhost:3000/api/tickets",
+    {
+      method: "GET",
+    }
+  );
 
   const tickets = await ticketRes.json();
 

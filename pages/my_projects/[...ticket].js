@@ -406,18 +406,26 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
 
 export async function getServerSideProps({ params }) {
   const id = params.ticket[1];
-  const ticketRes = await fetch(`http://localhost:3000/api/tickets/${id}`, {
-    method: "GET",
-  });
+  const ticketRes = await fetch(
+    `${process.env?.SITE_URL}/api/tickets/${id}` ||
+      `http://localhost:3000/api/tickets/${id}`,
+    {
+      method: "GET",
+    }
+  );
   const ticket = await ticketRes.json();
 
-  const usersRes = await fetch("http://localhost:3000/api/users", {
-    method: "GET",
-  });
+  const usersRes = await fetch(
+    `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users",
+    {
+      method: "GET",
+    }
+  );
   const users = await usersRes.json();
 
   const projectRes = await fetch(
-    `http://localhost:3000/api/projects/${ticket.data.project}`
+    `${process.env?.SITE_URL}/api/projects/${ticket.data.project}` ||
+      `http://localhost:3000/api/projects/${ticket.data.project}`
   );
   const project = await projectRes.json();
 

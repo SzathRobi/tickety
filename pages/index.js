@@ -14,11 +14,9 @@ import UserContext from "../contexts/userContext";
 
 function Home({ tickets = [], users = [] }) {
   const { user, error, isLoading } = useUser();
-  console.log("auth_user:", user["https://tickety.vercel.app/role"]);
 
   const { dbUser, setDbUser } = useContext(UserContext);
-  //console.log(user);
-  //console.log(tickets);
+
   const myUser = users.find((dbUser) => dbUser.email === user.name);
   useEffect(() => {
     setDbUser(myUser);
@@ -31,8 +29,6 @@ function Home({ tickets = [], users = [] }) {
   const assignedTickets = tickets.filter((ticket) =>
     ticket.devs_assigned.includes(user.name)
   );
-
-  console.log("assignedTickets:", assignedTickets);
 
   //Tickets By Priority
   const lowTickets = tickets.filter((ticket) => ticket.priority === "low");
@@ -217,9 +213,14 @@ function Home({ tickets = [], users = [] }) {
 export async function getServerSideProps(context) {
   try {
     await dbConnect();
-    const ticketRes = await fetch("http://localhost:3000/api/tickets");
+    const ticketRes = await fetch(
+      `${process.env?.SITE_URL}/api/tickets` ||
+        "http://localhost:3000/api/tickets"
+    );
     const tickets = await ticketRes.json();
-    const userRes = await fetch("http://localhost:3000/api/users");
+    const userRes = await fetch(
+      `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users"
+    );
     const users = await userRes.json();
     return {
       props: { tickets: tickets.data, users: users.data },
