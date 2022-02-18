@@ -75,8 +75,8 @@ const TicketSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ["error/bug", "feature request", "other"],
-    default: "error/bug",
+    enum: ["bug", "feature request", "other"],
+    default: "bug",
   },
   priority: {
     type: String,

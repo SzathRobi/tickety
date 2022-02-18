@@ -236,7 +236,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
                 optionsValue={project[0].devs_assigned}
                 canOpen={
                   shouldModify &&
-                  dbUser?.user_metadata?.role === "project_manager"
+                  user["https://tickety.vercel.app/role"] === "project_manager"
                 }
                 onClick={{ addDevs, removeDevs }}
                 setTicketDevsAssigned={setTicketDevsAssigned}
@@ -252,7 +252,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
                 onChange={(event) => updateTicketData(event)}
                 disabled={
                   shouldModify === false ||
-                  dbUser?.user_metadata?.role === "submitter"
+                  user["https://tickety.vercel.app/role"] === "submitter"
                 }
               >
                 <Option value="low">Low</Option>
@@ -269,7 +269,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
                 onChange={(event) => updateTicketData(event)}
                 disabled={
                   shouldModify === false ||
-                  dbUser?.user_metadata?.role === "submitter"
+                  user["https://tickety.vercel.app/role"] === "submitter"
                 }
               >
                 <Option value="new">New</Option>

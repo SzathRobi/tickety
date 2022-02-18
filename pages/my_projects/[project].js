@@ -21,7 +21,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
     desc: "",
     project: project.name,
     status: "new",
-    type: "",
+    type: "bug",
     priority: "low",
     submitter: user.nickname,
     devs_assigned: [],
@@ -75,6 +75,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
 
     const updateNewTicket = (event) => {
       setNewTicket({ ...newTicket, [event.target.name]: event.target.value });
+      console.log(newTicket);
     };
 
     const addNewTicket = async (event) => {
@@ -84,6 +85,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
         body: JSON.stringify(newTicket),
       });
       const data = await res.json();
+      setIsTicketModalOpen(false);
       console.log(data);
     };
 
@@ -313,7 +315,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
                       onChange={(event) => updateNewTicket(event)}
                       name="type"
                     >
-                      <option value="bug/error">Bug/Error</option>
+                      <option value="bug">Bug/Error</option>
                       <option value="feature request">Feature Request</option>
                       <option value="other">Other</option>
                     </select>
