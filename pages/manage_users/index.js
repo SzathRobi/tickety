@@ -4,9 +4,9 @@ import Input from "../../components/controls/Input";
 import ManageUsersTableRow from "../../components/table/ManageUsersTableRow";
 import RoleTableRow from "../../components/table/RoleTableRow";
 import { formatDate } from "../../utilities/formatDate";
+import { sortArr } from "../../utilities/sortArr";
 
 function Index({ users = [], projects = [] }) {
-  console.log(users);
   const [selectedProject, setSelectedProject] = useState(null);
   const updateSelectedProject = (event) => {
     setSelectedProject(
@@ -15,6 +15,30 @@ function Index({ users = [], projects = [] }) {
   };
   const [avaibleUsers, setAvaibleUsers] = useState(null);
   const [assignedUsers, setAssignedUsers] = useState(null);
+  const [allUsers, setAllUsers] = useState(users);
+
+  const [assignedSorter, setAssignedSorter] = useState("email");
+  const [avaibleSorter, setAvaibleSorter] = useState("email");
+  const [allUserSorter, setAllUserSorter] = useState("email");
+
+  useEffect(() => {
+    if (assignedUsers) {
+      setAssignedUsers(sortArr(assignedUsers, assignedSorter));
+    }
+  }, [assignedSorter]);
+
+  useEffect(() => {
+    if (avaibleUsers) {
+      setAvaibleUsers(sortArr(avaibleUsers, avaibleSorter));
+    }
+  }, [avaibleSorter]);
+
+  useEffect(() => {
+    if (allUsers) {
+      setAllUsers(sortArr(allUsers, allUserSorter));
+    }
+  }, [allUserSorter]);
+
   useEffect(() => {
     const filteredUsers = [];
     users.map((user) => {
@@ -22,8 +46,13 @@ function Index({ users = [], projects = [] }) {
         ? null
         : filteredUsers.push(user);
     });
-    selectedProject && setAvaibleUsers(filteredUsers);
-    selectedProject && setAssignedUsers(selectedProject.devs_assigned);
+    selectedProject &&
+      setAvaibleUsers(
+        filteredUsers.sort((a, b) =>
+          a.email.toUpperCase() > b.email.toUpperCase() ? 1 : -1
+        )
+      );
+    selectedProject && setAssignedUsers(sortArr(selectedProject.devs_assigned));
   }, [selectedProject]);
 
   const [avaibleSelectedUsers, setAvaibleSelectedUsers] = useState([]);
@@ -76,6 +105,8 @@ function Index({ users = [], projects = [] }) {
      */
   };
 
+  //const [assignedSorter, setAssignedSorter] = useState("email");
+
   return (
     <main className="p-4 md:pl-20 pt-20">
       <section>
@@ -101,7 +132,20 @@ function Index({ users = [], projects = [] }) {
                 <tr className="bg-gray-300">
                   <td>Avaible Users</td>
                   <td className="opacity-0">hidden</td>
-                  <td className="opacity-0">hidden</td>
+                  <td>
+                    <label>
+                      Sort By:
+                      <select
+                        onChange={(event) =>
+                          setAvaibleSorter(event.target.value)
+                        }
+                        value={avaibleSorter}
+                      >
+                        <option>email</option>
+                        <option>role</option>
+                      </select>
+                    </label>
+                  </td>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +168,20 @@ function Index({ users = [], projects = [] }) {
                 <tr className="bg-gray-300">
                   <td>Assigned Users</td>
                   <td className="opacity-0">hidden</td>
-                  <td className="opacity-0">hidden</td>
+                  <td>
+                    <label>
+                      Sort By:
+                      <select
+                        onChange={(event) =>
+                          setAssignedSorter(event.target.value)
+                        }
+                        value={assignedSorter}
+                      >
+                        <option value="email">email</option>
+                        <option value="role">role</option>
+                      </select>
+                    </label>
+                  </td>
                 </tr>
               </thead>
               <tbody>
@@ -150,11 +207,9 @@ function Index({ users = [], projects = [] }) {
         <div className="p-2 flex flex-col sm:flex-row gap-4 bg-gray-300">
           <label className="flex items-center gap-2">
             <p>Sort By: </p>
-            <select>
-              <option value="name">Name</option>
+            <select onChange={(event) => setAllUserSorter(event.target.value)}>
               <option value="email">Email</option>
               <option value="role">Role</option>
-              <option value="created_at">Created At</option>
             </select>
           </label>
           <label className="flex items-center gap-2">
@@ -172,8 +227,10 @@ function Index({ users = [], projects = [] }) {
             </tr>
           </thead>
           <tbody>
-            {users &&
-              users.map((user) => <RoleTableRow key={user._id} user={user} />)}
+            {allUsers &&
+              allUsers.map((user) => (
+                <RoleTableRow key={user._id} user={user} />
+              ))}
           </tbody>
         </table>
       </section>

@@ -4,6 +4,7 @@ import Modal from "../../components/modal/Modal";
 import MultiSelect from "../../components/select/MultiSelect";
 import TableRow from "../../components/table/TableRow";
 import UserContext from "../../contexts/userContext";
+import { sortArr } from "../../utilities/sortArr";
 
 function Index({ projects = [], users = [] }) {
   const [ismodalOpen, setIsModalOpen] = useState(false);
@@ -17,15 +18,18 @@ function Index({ projects = [], users = [] }) {
   const [assignedUsers, setAssignedUsers] = useState([]);
 
   const { user, error, isLoading } = useUser();
-  console.log("user:", user);
-  // const { dbUser } = useContext(UserContext);
 
   const [myProjects, setMyProjects] = useState(
     projects.data.filter((project) =>
       project.devs_assigned.some((dev) => dev.email === user.name)
     )
   );
-  console.log("myProjects:", myProjects);
+  const [projectSorter, setProjectSorter] = useState("email");
+  useEffect(() => {
+    if (myProjects) {
+      setMyProjects(sortArr(myProjects, projectSorter));
+    }
+  }, [projectSorter]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -62,7 +66,17 @@ function Index({ projects = [], users = [] }) {
             <tr>
               <th className="p-4">Name</th>
               <th className="p-4">Owner</th>
-              <th className="p-4"></th>
+              <th className="p-4 text-right">
+                <label>
+                  Sort By:
+                  <select
+                    onChange={(event) => setProjectSorter(event.target.value)}
+                  >
+                    <option>email</option>
+                    <option>role</option>
+                  </select>
+                </label>
+              </th>
             </tr>
           </thead>
           <tbody>

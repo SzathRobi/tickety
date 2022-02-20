@@ -56,6 +56,8 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
   const [successPopupOpen, setSuccessPopupOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(true);
 
+  const [ticketHistory, setTicketHistory] = useState(ticket.history);
+
   const [ticketData, setTicketData] = useState({
     ...ticket,
     title: ticket.title,
@@ -325,6 +327,8 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
           <TicketTable
             tableHeaders={["Commenter", "Message", "Created"]}
             tableDatas={commentArr}
+            sortOptions={["commenter", "msg", "created_at"]}
+            dataSetter={setCommentArr}
           />
         </div>
         {/** !!!!!!!!!!!!  TICKET HISTORY TRACKING  !!!!!!!!!!!! */}
@@ -341,6 +345,8 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
               "Updated",
             ]}
             tableDatas={ticketData.history}
+            sortOptions={["modifier", "created_at"]}
+            dataSetter={setTicketHistory}
           />
         </div>
         {/** !!!!!!!!!!!!  TICKET FILES  !!!!!!!!!!!! */}
@@ -390,6 +396,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
             tableHeaders={["Uploader", "Notes", "File", "Created"]}
             tableDatas={ticket.files}
             onClick={(file) => openFileModal(file)}
+            /*sortOptions={["uploader", "created_at"]}*/
           />
         </div>
         <Modal isOpen={fileModalOpen} updateIsOpen={toggleFileModalOpen}>

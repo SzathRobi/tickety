@@ -1,23 +1,40 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0";
 import Link from "next/link";
 import { formatDate } from "../../utilities/formatDate";
-function Index({ tickets = [] }) {
-  const { user, error, isLoading } = useUser();
+import { sortArr } from "../../utilities/sortArr";
 
+function Index({ tickets = [] }) {
+  const [ticketSorter, setTicketSorter] = useState("title");
+  const { user, error, isLoading } = useUser();
+  const [myTickets, setMyTickets] = useState(
+    tickets.filter((ticket) => ticket.devs_assigned.includes(user.name))
+  );
+
+  useEffect(() => {
+    if (myTickets) {
+      setMyTickets(sortArr(myTickets, ticketSorter));
+    }
+  }, [ticketSorter, myTickets]);
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
   if (user) {
-    const myTickets = tickets.filter((ticket) =>
-      ticket.devs_assigned.includes(user.name)
-    );
-    console.log(myTickets);
     return (
       <main className="p-4 md:pl-20 pt-20">
-        <h1 className="bg-teal-200 mt-2 p-2 text-xl font-medium">
-          Tickets assigned to me
-        </h1>
+        <div className="bg-teal-200 mt-2 p-2">
+          <h1 className="text-xl font-medium">Tickets assigned to me</h1>
+          <label>
+            Sort by:
+            <select
+              value={ticketSorter}
+              onChange={(event) => setTicketSorter(event.target.value)}
+            >
+              <option value="title">Title</option>
+              <option value="created_at">Created</option>
+            </select>
+          </label>
+        </div>
         <table className="w-full text-left">
           <thead>
             <tr className="bg-gray-300">
