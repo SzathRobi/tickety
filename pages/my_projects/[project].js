@@ -1,11 +1,12 @@
 //import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Modal from "../../components/modal/Modal";
 import UserTableRow from "../../components/table/UserTableRow";
 import Link from "next/link";
 import { formatDate } from "../../utilities/formatDate";
 import UserContext from "../../contexts/userContext";
+import { sortArr } from "../../utilities/sortArr";
 
 function Project({ project = {}, users = [], tickets = [] }) {
   const { user, error, isLoading } = useUser();
@@ -26,6 +27,31 @@ function Project({ project = {}, users = [], tickets = [] }) {
     submitter: user.nickname,
     devs_assigned: [],
   });
+
+  const [projectTickets, setProjectTickets] = useState(
+    tickets.filter((ticket) => ticket.project === project.name)
+  );
+  const [projectUsersSorter, setProjectUsersSorter] = useState("email");
+  const [projectTicketsSorter, setProjectTicketsSorter] = useState("status");
+
+  useEffect(() => {
+    if (assignedUsers) {
+      sortArr(assignedUsers, projectUsersSorter);
+    }
+  }, [projectUsersSorter, assignedUsers]);
+
+  useEffect(() => {
+    if (projectTickets) {
+      sortArr(projectTickets, projectTicketsSorter);
+    }
+  }, [projectTicketsSorter, projectTickets]);
+
+  useEffect(() => {
+    if (assignedUsers) {
+      sortArr(assignedUsers, projectUsersSorter);
+    }
+  }, [projectUsersSorter, assignedUsers]);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -86,6 +112,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
       });
       const data = await res.json();
       setIsTicketModalOpen(false);
+      setProjectTickets(projectTickets.concat(newTicket));
       console.log(data);
     };
 
@@ -140,6 +167,24 @@ function Project({ project = {}, users = [], tickets = [] }) {
               )}
               <table className="w-full table-auto text-left">
                 <thead className="bg-gray-100">
+                  <tr>
+                    <td>
+                      <label>
+                        Sort by:{" "}
+                        <select
+                          value={projectUsersSorter}
+                          onChange={(event) =>
+                            setProjectUsersSorter(event.target.value)
+                          }
+                        >
+                          <option value="email">Email</option>
+                          <option value="role">Role</option>
+                        </select>
+                      </label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                  </tr>
                   <tr>
                     <th className="p-1">Email</th>
                     <th className="p-1">Role</th>
@@ -214,6 +259,25 @@ function Project({ project = {}, users = [], tickets = [] }) {
               <table className="w-full table-auto text-left mb-2">
                 <thead className="bg-gray-100">
                   <tr>
+                    <td>
+                      <label>
+                        Sort by:{" "}
+                        <select
+                          value={projectTicketsSorter}
+                          onChange={(event) =>
+                            setProjectTicketsSorter(event.target.value)
+                          }
+                        >
+                          <option value="status">Status</option>
+                          <option value="priority">Priority</option>
+                          <option value="submitter">Submitter</option>
+                        </select>
+                      </label>
+                    </td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
                     <th className="p-2">Title</th>
                     <th className="p-2 hidden sm:block">Submitter</th>
                     <th className="p-2">Dev</th>
@@ -224,7 +288,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {tickets.map((ticket) => (
+                  {projectTickets.map((ticket) => (
                     <tr
                       className="border-b-4 border-stone-400 "
                       key={ticket.id}

@@ -1,10 +1,39 @@
+import { useEffect, useState } from "react";
 import { formatDate } from "../../utilities/formatDate";
+import { sortArr } from "../../utilities/sortArr";
 
-function TicketTable({ tableHeaders, tableDatas, onClick = null }) {
-  //console.log(tableDatas);
+function TicketTable({
+  tableHeaders,
+  tableDatas,
+  onClick = null,
+  sortOptions = [],
+  dataSetter = () => {},
+}) {
+  const [sorter, setSorter] = useState("created_at");
+  useEffect(() => {
+    if (tableDatas) {
+      dataSetter(sortArr(tableDatas, sorter));
+    }
+  }, [sorter, tableDatas]);
   return (
     <table className="w-full table-auto">
       <thead>
+        {sortOptions.length !== 0 && (
+          <tr>
+            <td>
+              <label>
+                Sort by:
+                <select>
+                  {sortOptions.map((sortOption) => (
+                    <option key={sortOption} value={sortOption}>
+                      {sortOption.replace("_", " ")}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </td>
+          </tr>
+        )}
         <tr className="text-left">
           {tableHeaders.map((header) => (
             <th key={header} className="font-medium p-2">
