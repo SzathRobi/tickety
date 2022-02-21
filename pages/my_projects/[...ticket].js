@@ -1,4 +1,6 @@
 import { useContext, useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0";
 
 import Input from "../../components/controls/Input";
@@ -14,12 +16,10 @@ import { findObjectsDiffs } from "../../utilities/findObjectsDiffs";
 import { formatDate } from "../../utilities/formatDate";
 import { updateData } from "../../utilities/updateData";
 import { getBase64 } from "../../utilities/getBase64";
-import UserContext from "../../contexts/userContext";
 
 function Ticket({ ticket = {}, users = [], project = [] }) {
+  const router = useRouter();
   const { user, error, isLoading } = useUser();
-  const { dbUser } = useContext(UserContext);
-  console.log(dbUser);
 
   const [shouldModify, setShouldModify] = useState(false);
 
@@ -151,7 +151,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
       let newValues = keys.map((key) => ticketData[key]);
 
       const history = {
-        modifier: user?.nickname || "error",
+        modifier: user?.nickname,
         value_keys: keys,
         old_values: oldValues,
         new_values: newValues,
@@ -162,6 +162,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
         ...ticketData,
         history: ticketData.history.concat(history),
       });
+      console.log("ticketData.history:", ticketData.history);
 
       updateData(`tickets/${ticket._id}`, ticketData);
     };
@@ -183,11 +184,15 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
       //setComment({ ...comment, created_at: Date.now() });
       setCommentArr(commentArr.concat(comment));
       const newTicket = { ...ticket, comments: commentArr };
-      updateData(`tickets/${ticket._id}`, newTicket);
+
+      //updateData(`tickets/${ticket._id}`, newTicket);
     };
 
     return (
       <section className="p-4 md:pl-20 pt-20 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <header className="absolute top-12 left-20">
+          <button onClick={() => router.back()}>BACK {"<--"}</button>
+        </header>
         {/******* DETAILS *******/}
         {successPopupOpen && <SuccessPopup msg={"Sikerlt yeeeeeee"} />}
         <div>
