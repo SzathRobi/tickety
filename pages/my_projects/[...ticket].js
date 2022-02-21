@@ -185,7 +185,7 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
       setCommentArr(commentArr.concat(comment));
       const newTicket = { ...ticket, comments: commentArr };
 
-      //updateData(`tickets/${ticket._id}`, newTicket);
+      updateData(`tickets/${ticket._id}`, newTicket);
     };
 
     return (
@@ -329,30 +329,34 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
           <h2 className="bg-teal-200 p-2 text-xl font-medium">
             Comments for ticket
           </h2>
-          <TicketTable
-            tableHeaders={["Commenter", "Message", "Created"]}
-            tableDatas={commentArr}
-            sortOptions={["commenter", "msg", "created_at"]}
-            dataSetter={setCommentArr}
-          />
+          <div className="tableContainer">
+            <TicketTable
+              tableHeaders={["Commenter", "Message", "Created"]}
+              tableDatas={commentArr}
+              sortOptions={["commenter", "msg", "created_at"]}
+              dataSetter={setCommentArr}
+            />
+          </div>
         </div>
         {/** !!!!!!!!!!!!  TICKET HISTORY TRACKING  !!!!!!!!!!!! */}
         <div>
           <h2 className="bg-teal-200 p-2 text-xl font-medium">
             Ticket History
           </h2>
-          <TicketTable
-            tableHeaders={[
-              "Modifier",
-              "Prop",
-              "Old Value",
-              "New Value",
-              "Updated",
-            ]}
-            tableDatas={ticketData.history}
-            sortOptions={["modifier", "created_at"]}
-            dataSetter={setTicketHistory}
-          />
+          <div className="tableContainer">
+            <TicketTable
+              tableHeaders={[
+                "Modifier",
+                "Prop",
+                "Old Value",
+                "New Value",
+                "Updated",
+              ]}
+              tableDatas={ticketData.history}
+              sortOptions={["modifier", "created_at"]}
+              dataSetter={setTicketHistory}
+            />
+          </div>
         </div>
         {/** !!!!!!!!!!!!  TICKET FILES  !!!!!!!!!!!! */}
         <div>
@@ -397,12 +401,14 @@ function Ticket({ ticket = {}, users = [], project = [] }) {
           <h2 className="bg-teal-200 p-2 text-xl font-medium">
             Ticket Attachments
           </h2>
-          <TicketTable
-            tableHeaders={["Uploader", "Notes", "File", "Created"]}
-            tableDatas={ticket.files}
-            onClick={(file) => openFileModal(file)}
-            /*sortOptions={["uploader", "created_at"]}*/
-          />
+          <div className="tableContainer">
+            <TicketTable
+              tableHeaders={["Uploader", "Notes", "File", "Created"]}
+              tableDatas={ticket.files}
+              onClick={(file) => openFileModal(file)}
+              /*sortOptions={["uploader", "created_at"]}*/
+            />
+          </div>
         </div>
         <Modal isOpen={fileModalOpen} updateIsOpen={toggleFileModalOpen}>
           <div>

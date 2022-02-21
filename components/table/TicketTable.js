@@ -34,7 +34,7 @@ function TicketTable({
             </td>
           </tr>
         )}
-        <tr className="text-left">
+        <tr className="text-left sticky top-0 bg-white">
           {tableHeaders.map((header) => (
             <th key={header} className="font-medium p-2">
               {header}

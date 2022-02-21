@@ -61,45 +61,47 @@ function Index({ projects = [], users = [] }) {
             CREATE NEW PROJECT
           </button>
         )}
-        <table className="w-full table-auto text-left">
-          <thead className="bg-teal-200">
-            <tr>
-              <th className="p-4">Name</th>
-              <th className="p-4">Owner</th>
-              <th className="p-4 text-right">
-                <label>
-                  Sort By:
-                  <select
-                    onChange={(event) => setProjectSorter(event.target.value)}
-                  >
-                    <option>email</option>
-                    <option>role</option>
-                  </select>
-                </label>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {user &&
-            user["https://tickety.vercel.app/role"] === "project_manager" ? (
-              projects.data.map((project) => (
-                <TableRow key={project.id} project={project} />
-              ))
-            ) : myProjects.length !== 0 ? (
-              myProjects.map((project) => (
-                <TableRow key={project.id} project={project} />
-              ))
-            ) : (
+        <div className="tableContainer">
+          <table className="w-full table-auto text-left">
+            <thead className="bg-teal-200">
               <tr>
-                <td>
-                  <p className="translate-x-1/3 p-4 text-center mt-4">
-                    Currently No Project
-                  </p>
-                </td>
+                <th className="p-4">Name</th>
+                <th className="p-4">Owner</th>
+                <th className="p-4 text-right">
+                  <label>
+                    Sort By:
+                    <select
+                      onChange={(event) => setProjectSorter(event.target.value)}
+                    >
+                      <option>email</option>
+                      <option>role</option>
+                    </select>
+                  </label>
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {user &&
+              user["https://tickety.vercel.app/role"] === "project_manager" ? (
+                projects.data.map((project) => (
+                  <TableRow key={project.id} project={project} />
+                ))
+              ) : myProjects.length !== 0 ? (
+                myProjects.map((project) => (
+                  <TableRow key={project.id} project={project} />
+                ))
+              ) : (
+                <tr>
+                  <td>
+                    <p className="translate-x-1/3 p-4 text-center mt-4">
+                      Currently No Project
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         <Modal isOpen={ismodalOpen} updateIsOpen={updateModalOpen}>
           <form
             onSubmit={(event) => createProject(event)}

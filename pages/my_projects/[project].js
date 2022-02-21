@@ -165,42 +165,44 @@ function Project({ project = {}, users = [], tickets = [] }) {
                   ADD NEW USER
                 </button>
               )}
-              <table className="w-full table-auto text-left">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <td>
-                      <label>
-                        Sort by:{" "}
-                        <select
-                          value={projectUsersSorter}
-                          onChange={(event) =>
-                            setProjectUsersSorter(event.target.value)
-                          }
-                        >
-                          <option value="email">Email</option>
-                          <option value="role">Role</option>
-                        </select>
-                      </label>
-                    </td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th className="p-1">Email</th>
-                    <th className="p-1">Role</th>
-                    <th className="p-1"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {project.devs_assigned.map((dev) => (
-                    <UserTableRow
-                      key={dev.id}
-                      user={dev}
-                      removeUsersFromProject={removeUsersFromProject}
-                    />
-                  ))}
-                </tbody>
-              </table>
+              <div className="tableContainer">
+                <table className="w-full table-auto text-left">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <td>
+                        <label>
+                          Sort by:{" "}
+                          <select
+                            value={projectUsersSorter}
+                            onChange={(event) =>
+                              setProjectUsersSorter(event.target.value)
+                            }
+                          >
+                            <option value="email">Email</option>
+                            <option value="role">Role</option>
+                          </select>
+                        </label>
+                      </td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr className="sticky top-0 bg-white">
+                      <th className="p-1">Email</th>
+                      <th className="p-1">Role</th>
+                      <th className="p-1"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.devs_assigned.map((dev) => (
+                      <UserTableRow
+                        key={dev.id}
+                        user={dev}
+                        removeUsersFromProject={removeUsersFromProject}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
             <Modal isOpen={isUserModalOpen} updateIsOpen={toggleUserModalOpen}>
               {/**sssssssssssssssssssssssssssssssssssssssssssssssssss */}
@@ -256,81 +258,83 @@ function Project({ project = {}, users = [], tickets = [] }) {
               >
                 ADD NEW TICKET
               </button>
-              <table className="w-full table-auto text-left mb-2">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <td>
-                      <label>
-                        Sort by:{" "}
-                        <select
-                          value={projectTicketsSorter}
-                          onChange={(event) =>
-                            setProjectTicketsSorter(event.target.value)
-                          }
-                        >
-                          <option value="status">Status</option>
-                          <option value="priority">Priority</option>
-                          <option value="submitter">Submitter</option>
-                        </select>
-                      </label>
-                    </td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <th className="p-2">Title</th>
-                    <th className="p-2 hidden sm:block">Submitter</th>
-                    <th className="p-2">Dev</th>
-                    <th className="p-2 hidden sm:block">Status</th>
-                    <th className="p-2">Priority</th>
-                    <th className="p-2 hidden sm:block">Created</th>
-                    <th className="p-2"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projectTickets.map((ticket) => (
-                    <tr
-                      className="border-b-4 border-stone-400 "
-                      key={ticket.id}
-                    >
-                      <td className="p-2">{ticket.title}</td>
-                      <td className="p-2 hidden sm:table-cell">
-                        {ticket.submitter}
+              <div className="tableContainer">
+                <table className="w-full table-auto text-left mb-2">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <td>
+                        <label>
+                          Sort by:{" "}
+                          <select
+                            value={projectTicketsSorter}
+                            onChange={(event) =>
+                              setProjectTicketsSorter(event.target.value)
+                            }
+                          >
+                            <option value="status">Status</option>
+                            <option value="priority">Priority</option>
+                            <option value="submitter">Submitter</option>
+                          </select>
+                        </label>
                       </td>
-                      <td className="p-2">{ticket.developer}</td>
-                      <td className="p-2 hidden sm:table-cell">
-                        {ticket.status}
-                      </td>
-                      <td className="p-2">{ticket.priority}</td>
-                      <td className="p-2 hidden sm:table-cell">
-                        {formatDate(ticket.created_at)}
-                      </td>
-                      <td className="p-2">
-                        <Link
-                          href={`/my_projects/${project.name}/${ticket._id}`}
-                        >
-                          <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-6 w-6"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </a>
-                        </Link>
-                      </td>
+                      <td></td>
+                      <td></td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                    <tr className="sticky top-0 bg-white">
+                      <th className="p-2">Title</th>
+                      <th className="p-2 hidden sm:block">Submitter</th>
+                      <th className="p-2">Dev</th>
+                      <th className="p-2 hidden sm:block">Status</th>
+                      <th className="p-2">Priority</th>
+                      <th className="p-2 hidden sm:block">Created</th>
+                      <th className="p-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projectTickets.map((ticket) => (
+                      <tr
+                        className="border-b-4 border-stone-400 "
+                        key={ticket.id}
+                      >
+                        <td className="p-2">{ticket.title}</td>
+                        <td className="p-2 hidden sm:table-cell">
+                          {ticket.submitter}
+                        </td>
+                        <td className="p-2">{ticket.developer}</td>
+                        <td className="p-2 hidden sm:table-cell">
+                          {ticket.status}
+                        </td>
+                        <td className="p-2">{ticket.priority}</td>
+                        <td className="p-2 hidden sm:table-cell">
+                          {formatDate(ticket.created_at)}
+                        </td>
+                        <td className="p-2">
+                          <Link
+                            href={`/my_projects/${project.name}/${ticket._id}`}
+                          >
+                            <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </a>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
             <Modal
               isOpen={isTicketModalOpen}
