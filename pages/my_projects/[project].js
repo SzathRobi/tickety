@@ -30,6 +30,12 @@ function Project({ project = {}, users = [], tickets = [] }) {
   const [projectTickets, setProjectTickets] = useState(
     tickets.filter((ticket) => ticket.project === project.name)
   );
+
+  const [activeTickets, setActiveTickets] = useState(
+    projectTickets.filter((ticket) => ticket.status !== "resolved")
+  );
+  const [showResolved, setShowResolved] = useState(false);
+
   const [projectUsersSorter, setProjectUsersSorter] = useState("email");
   const [projectTicketsSorter, setProjectTicketsSorter] = useState("status");
 
@@ -258,7 +264,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
                 ADD NEW TICKET
               </button>
               <div className="tableContainer">
-                <table className="w-full table-auto text-left mb-2">
+                <table className="w-full text-left mb-2">
                   <thead className="bg-gray-100">
                     <tr>
                       <td>
@@ -276,6 +282,16 @@ function Project({ project = {}, users = [], tickets = [] }) {
                           </select>
                         </label>
                       </td>
+                      <td>
+                        <label>
+                          Show resolved
+                          <input
+                            type="checkbox"
+                            value={showResolved}
+                            onChange={() => setShowResolved(!showResolved)}
+                          />
+                        </label>
+                      </td>
                       <td></td>
                       <td></td>
                     </tr>
@@ -290,47 +306,89 @@ function Project({ project = {}, users = [], tickets = [] }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {projectTickets.map((ticket) => (
-                      <tr
-                        className="border-b-4 border-stone-400 "
-                        key={ticket._id}
-                      >
-                        <td className="p-2">{ticket.title}</td>
-                        <td className="p-2 hidden sm:table-cell">
-                          {ticket.submitter}
-                        </td>
-                        <td className="p-2">{ticket.developer}</td>
-                        <td className="p-2 hidden sm:table-cell">
-                          {ticket.status}
-                        </td>
-                        <td className="p-2">{ticket.priority}</td>
-                        <td className="p-2 hidden sm:table-cell">
-                          {formatDate(ticket.created_at)}
-                        </td>
-                        <td className="p-2">
-                          <Link
-                            href={`/my_projects/${project.name}/${ticket._id}`}
+                    {showResolved
+                      ? projectTickets.map((ticket) => (
+                          <tr
+                            className="border-b-4 border-stone-400 "
+                            key={ticket._id}
                           >
-                            <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                            <td className="p-2">{ticket.title}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {ticket.submitter}
+                            </td>
+                            <td className="p-2">{ticket.developer}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {ticket.status}
+                            </td>
+                            <td className="p-2">{ticket.priority}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {formatDate(ticket.created_at)}
+                            </td>
+                            <td className="p-2">
+                              <Link
+                                href={`/my_projects/${project.name}/${ticket._id}`}
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                            </a>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
+                                <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                </a>
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
+                      : activeTickets.map((ticket) => (
+                          <tr
+                            className="border-b-4 border-stone-400 "
+                            key={ticket._id}
+                          >
+                            <td className="p-2">{ticket.title}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {ticket.submitter}
+                            </td>
+                            <td className="p-2">{ticket.developer}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {ticket.status}
+                            </td>
+                            <td className="p-2">{ticket.priority}</td>
+                            <td className="p-2 hidden sm:table-cell">
+                              {formatDate(ticket.created_at)}
+                            </td>
+                            <td className="p-2">
+                              <Link
+                                href={`/my_projects/${project.name}/${ticket._id}`}
+                              >
+                                <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                </a>
+                              </Link>
+                            </td>
+                          </tr>
+                        ))}
                   </tbody>
                 </table>
               </div>

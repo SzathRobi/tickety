@@ -11,6 +11,11 @@ function Index({ tickets = [] }) {
     tickets.filter((ticket) => ticket.devs_assigned.includes(user.name))
   );
 
+  const [activeTickets, setActiveTickets] = useState(
+    myTickets.filter((ticket) => ticket.status !== "resolved")
+  );
+  const [showResolved, setShowResolved] = useState(false);
+
   useEffect(() => {
     if (myTickets) {
       setMyTickets(sortArr(myTickets, ticketSorter));
@@ -42,9 +47,15 @@ function Index({ tickets = [] }) {
                   </label>
                   <label>
                     Show resolved
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      value={showResolved}
+                      onChange={() => setShowResolved(!showResolved)}
+                    />
                   </label>
                 </td>
+                <td></td>
+                <td></td>
                 <td></td>
               </tr>
               <tr>
@@ -55,45 +66,85 @@ function Index({ tickets = [] }) {
               </tr>
             </thead>
             <tbody>
-              {myTickets.map((myTicket) => (
-                <tr
-                  key={myTicket._id}
-                  className="p-2 border-b-2 border-gray-400 transition-colors
+              {showResolved
+                ? myTickets.map((myTicket) => (
+                    <tr
+                      key={myTicket._id}
+                      className="p-2 border-b-2 border-gray-400 transition-colors
                 cursor-pointer hover:bg-gray-200"
-                >
-                  <td className="py-2 max-w-xs">{myTicket.title}</td>
-                  <td className="py-2 max-w-xs">
-                    {myTicket.devs_assigned.map((dev) => (
-                      <p key={dev}>{dev}</p>
-                    ))}
-                  </td>
-                  <td className="py-2 max-w-xs">
-                    {formatDate(myTicket.created_at)}
-                  </td>
-                  <td className="py-2 max-w-xs">
-                    <Link
-                      href={`/my_projects/${myTicket.project}/${myTicket._id}`}
                     >
-                      <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
+                      <td className="py-2 max-w-xs">{myTicket.title}</td>
+                      <td className="py-2 max-w-xs">
+                        {myTicket.devs_assigned.map((dev) => (
+                          <p key={dev}>{dev}</p>
+                        ))}
+                      </td>
+                      <td className="py-2 max-w-xs">
+                        {formatDate(myTicket.created_at)}
+                      </td>
+                      <td className="py-2 max-w-xs">
+                        <Link
+                          href={`/my_projects/${myTicket.project}/${myTicket._id}`}
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </a>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                          <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </a>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                : activeTickets.map((myTicket) => (
+                    <tr
+                      key={myTicket._id}
+                      className="p-2 border-b-2 border-gray-400 transition-colors
+                cursor-pointer hover:bg-gray-200"
+                    >
+                      <td className="py-2 max-w-xs">{myTicket.title}</td>
+                      <td className="py-2 max-w-xs">
+                        {myTicket.devs_assigned.map((dev) => (
+                          <p key={dev}>{dev}</p>
+                        ))}
+                      </td>
+                      <td className="py-2 max-w-xs">
+                        {formatDate(myTicket.created_at)}
+                      </td>
+                      <td className="py-2 max-w-xs">
+                        <Link
+                          href={`/my_projects/${myTicket.project}/${myTicket._id}`}
+                        >
+                          <a className="w-8 flex items-center gap-1 p-1 rounded text-white text-sm bg-cyan-600 transition-all hover:bg-cyan-800">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </a>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
