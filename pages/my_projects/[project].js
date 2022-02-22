@@ -10,7 +10,6 @@ import { sortArr } from "../../utilities/sortArr";
 
 function Project({ project = {}, users = [], tickets = [] }) {
   const { user, error, isLoading } = useUser();
-  const { dbUser } = useContext(UserContext);
 
   const [descShown, setDescShown] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
@@ -101,7 +100,6 @@ function Project({ project = {}, users = [], tickets = [] }) {
 
     const updateNewTicket = (event) => {
       setNewTicket({ ...newTicket, [event.target.name]: event.target.value });
-      console.log(newTicket);
     };
 
     const addNewTicket = async (event) => {
@@ -113,7 +111,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
       const data = await res.json();
       setIsTicketModalOpen(false);
       setProjectTickets(projectTickets.concat(newTicket));
-      console.log(data);
+      //console.log(data);
     };
 
     return (
@@ -157,7 +155,8 @@ function Project({ project = {}, users = [], tickets = [] }) {
               <h2 className="text-xl font-semibold px-2 py-4 rounded bg-teal-200">
                 Current devs in this project
               </h2>
-              {dbUser?.user_metadata?.role === "project_manager" && (
+              {user["https://tickety.vercel.app/role"] ===
+                "project_manager" && (
                 <button
                   onClick={() => toggleUserModalOpen()}
                   className="rounded my-2 py-2 px-4 text-white text-sm bg-blue-600 cursor-pointer transition-all hover:bg-blue-800"
@@ -294,7 +293,7 @@ function Project({ project = {}, users = [], tickets = [] }) {
                     {projectTickets.map((ticket) => (
                       <tr
                         className="border-b-4 border-stone-400 "
-                        key={ticket.id}
+                        key={ticket._id}
                       >
                         <td className="p-2">{ticket.title}</td>
                         <td className="p-2 hidden sm:table-cell">

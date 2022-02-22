@@ -75,7 +75,13 @@ function TicketTable({
           <tr>
             <td></td>
             <td></td>
-            <td>Currently No Data</td>
+            <td>
+              {sortOptions.includes("modifier") ? (
+                <strong>Currently Working on this </strong>
+              ) : (
+                "Currently No Data"
+              )}
+            </td>
             <td></td>
           </tr>
         )}

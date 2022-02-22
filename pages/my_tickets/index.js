@@ -22,23 +22,32 @@ function Index({ tickets = [] }) {
   if (user) {
     return (
       <main className="p-4 md:pl-20 pt-20">
-        <div className="bg-teal-200 mt-2 p-2">
-          <h1 className="text-xl font-medium">Tickets assigned to me</h1>
-          <label>
-            Sort by:
-            <select
-              value={ticketSorter}
-              onChange={(event) => setTicketSorter(event.target.value)}
-            >
-              <option value="title">Title</option>
-              <option value="created_at">Created</option>
-            </select>
-          </label>
-        </div>
+        <h1 className="bg-teal-200 mt-2 p-2 text-xl font-medium">
+          Tickets assigned to me
+        </h1>
         <div className="tableContainer">
           <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-300">
+            <thead className="bg-gray-300">
+              <tr>
+                <td>
+                  <label>
+                    Sort by:
+                    <select
+                      value={ticketSorter}
+                      onChange={(event) => setTicketSorter(event.target.value)}
+                    >
+                      <option value="title">Title</option>
+                      <option value="created_at">Created</option>
+                    </select>
+                  </label>
+                  <label>
+                    Show resolved
+                    <input type="checkbox" />
+                  </label>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
                 <th className="font-medium p-2">Title</th>
                 <th className="font-medium p-2">Devs</th>
                 <th className="font-medium p-2">Created At</th>

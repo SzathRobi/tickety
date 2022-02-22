@@ -19,15 +19,19 @@ function Index({ projects = [], users = [] }) {
 
   const { user, error, isLoading } = useUser();
 
+  const [allProjects, setAllProjects] = useState(projects.data);
   const [myProjects, setMyProjects] = useState(
-    projects.data.filter((project) =>
+    allProjects.filter((project) =>
       project.devs_assigned.some((dev) => dev.email === user.name)
     )
   );
-  const [projectSorter, setProjectSorter] = useState("email");
+  const [projectSorter, setProjectSorter] = useState("name");
   useEffect(() => {
     if (myProjects) {
       setMyProjects(sortArr(myProjects, projectSorter));
+    }
+    if (allProjects) {
+      setAllProjects(sortArr(allProjects, projectSorter));
     }
   }, [projectSorter]);
 
@@ -42,13 +46,15 @@ function Index({ projects = [], users = [] }) {
     };
     const createProject = async (event) => {
       event.preventDefault();
+      setAllProjects(allProjects.concat(formData));
+      console.log(myProjects);
       const res = await fetch("/api/projects", {
         method: "POST",
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       updateModalOpen();
-      console.log(data);
+      //console.log(data);
     };
 
     return (
@@ -73,8 +79,8 @@ function Index({ projects = [], users = [] }) {
                     <select
                       onChange={(event) => setProjectSorter(event.target.value)}
                     >
-                      <option>email</option>
-                      <option>role</option>
+                      <option value="name">Name</option>
+                      <option value="owner">Owner</option>
                     </select>
                   </label>
                 </th>
@@ -83,7 +89,7 @@ function Index({ projects = [], users = [] }) {
             <tbody>
               {user &&
               user["https://tickety.vercel.app/role"] === "project_manager" ? (
-                projects.data.map((project) => (
+                allProjects.map((project) => (
                   <TableRow key={project.id} project={project} />
                 ))
               ) : myProjects.length !== 0 ? (
