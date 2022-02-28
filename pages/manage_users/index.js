@@ -126,7 +126,7 @@ function Index({ users = [], projects = [] }) {
           </select>
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col items-start justify-between">
+          <div className="flex flex-col items-start justify-between tableContainer">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-300">
@@ -162,7 +162,7 @@ function Index({ users = [], projects = [] }) {
             </table>
             <Button onClick={assignUsers}>ASSIGN USER</Button>
           </div>
-          <div className="flex flex-col items-start justify-between">
+          <div className="flex flex-col items-start justify-between tableContainer">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-300">
@@ -218,21 +218,23 @@ function Index({ users = [], projects = [] }) {
             <Button>SEARCH</Button>
           </label>
         </div>
-        <table className="text-left w-full">
-          <thead>
-            <tr>
-              <th className="px-2 py-1">Email</th>
-              <th className="px-2 py-1">Role</th>
-              <th className="px-2 py-1 opacity-0">hidden</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allUsers &&
-              allUsers.map((user) => (
-                <RoleTableRow key={user._id} user={user} />
-              ))}
-          </tbody>
-        </table>
+        <div className="tableContainer">
+          <table className="text-left w-full">
+            <thead>
+              <tr>
+                <th className="px-2 py-1">Email</th>
+                <th className="px-2 py-1">Role</th>
+                <th className="px-2 py-1 opacity-0">hidden</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allUsers &&
+                allUsers.map((user) => (
+                  <RoleTableRow key={user._id} user={user} />
+                ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   );

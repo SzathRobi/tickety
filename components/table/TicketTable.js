@@ -23,7 +23,10 @@ function TicketTable({
             <td>
               <label>
                 Sort by:
-                <select>
+                <select
+                  value={sorter}
+                  onChange={(e) => setSorter(e.target.value)}
+                >
                   {sortOptions.map((sortOption) => (
                     <option key={sortOption} value={sortOption}>
                       {sortOption.replace("_", " ")}
@@ -34,7 +37,7 @@ function TicketTable({
             </td>
           </tr>
         )}
-        <tr className="text-left">
+        <tr className="text-left sticky top-0 bg-white">
           {tableHeaders.map((header) => (
             <th key={header} className="font-medium p-2">
               {header}
@@ -75,7 +78,13 @@ function TicketTable({
           <tr>
             <td></td>
             <td></td>
-            <td>Currently No Data</td>
+            <td>
+              {sortOptions.includes("modifier") ? (
+                <strong>Currently Working on this </strong>
+              ) : (
+                "Currently No Data"
+              )}
+            </td>
             <td></td>
           </tr>
         )}

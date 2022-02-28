@@ -19,15 +19,19 @@ function Index({ projects = [], users = [] }) {
 
   const { user, error, isLoading } = useUser();
 
+  const [allProjects, setAllProjects] = useState(projects.data);
   const [myProjects, setMyProjects] = useState(
-    projects.data.filter((project) =>
+    allProjects.filter((project) =>
       project.devs_assigned.some((dev) => dev.email === user.name)
     )
   );
-  const [projectSorter, setProjectSorter] = useState("email");
+  const [projectSorter, setProjectSorter] = useState("name");
   useEffect(() => {
     if (myProjects) {
       setMyProjects(sortArr(myProjects, projectSorter));
+    }
+    if (allProjects) {
+      setAllProjects(sortArr(allProjects, projectSorter));
     }
   }, [projectSorter]);
 
@@ -42,13 +46,15 @@ function Index({ projects = [], users = [] }) {
     };
     const createProject = async (event) => {
       event.preventDefault();
+      setAllProjects(allProjects.concat(formData));
+      console.log(myProjects);
       const res = await fetch("/api/projects", {
         method: "POST",
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       updateModalOpen();
-      console.log(data);
+      //console.log(data);
     };
 
     return (
@@ -61,45 +67,47 @@ function Index({ projects = [], users = [] }) {
             CREATE NEW PROJECT
           </button>
         )}
-        <table className="w-full table-auto text-left">
-          <thead className="bg-teal-200">
-            <tr>
-              <th className="p-4">Name</th>
-              <th className="p-4">Owner</th>
-              <th className="p-4 text-right">
-                <label>
-                  Sort By:
-                  <select
-                    onChange={(event) => setProjectSorter(event.target.value)}
-                  >
-                    <option>email</option>
-                    <option>role</option>
-                  </select>
-                </label>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {user &&
-            user["https://tickety.vercel.app/role"] === "project_manager" ? (
-              projects.data.map((project) => (
-                <TableRow key={project.id} project={project} />
-              ))
-            ) : myProjects.length !== 0 ? (
-              myProjects.map((project) => (
-                <TableRow key={project.id} project={project} />
-              ))
-            ) : (
+        <div className="tableContainer">
+          <table className="w-full table-auto text-left">
+            <thead className="bg-teal-200">
               <tr>
-                <td>
-                  <p className="translate-x-1/3 p-4 text-center mt-4">
-                    Currently No Project
-                  </p>
-                </td>
+                <th className="p-4">Name</th>
+                <th className="p-4">Owner</th>
+                <th className="p-4 text-right">
+                  <label>
+                    Sort By:
+                    <select
+                      onChange={(event) => setProjectSorter(event.target.value)}
+                    >
+                      <option value="name">Name</option>
+                      <option value="owner">Owner</option>
+                    </select>
+                  </label>
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {user &&
+              user["https://tickety.vercel.app/role"] === "project_manager" ? (
+                allProjects.map((project) => (
+                  <TableRow key={project.id} project={project} />
+                ))
+              ) : myProjects.length !== 0 ? (
+                myProjects.map((project) => (
+                  <TableRow key={project.id} project={project} />
+                ))
+              ) : (
+                <tr>
+                  <td>
+                    <p className="translate-x-1/3 p-4 text-center mt-4">
+                      Currently No Project
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         <Modal isOpen={ismodalOpen} updateIsOpen={updateModalOpen}>
           <form
             onSubmit={(event) => createProject(event)}
