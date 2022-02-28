@@ -17,7 +17,7 @@ import { formatDate } from "../../utilities/formatDate";
 import { updateData } from "../../utilities/updateData";
 import { getBase64 } from "../../utilities/getBase64";
 
-function Ticket({ ticket = {}, users = [], project = [] }) {
+function Ticket({ ticket = {}, project = [] }) {
   const router = useRouter();
   const { user, error, isLoading } = useUser();
 
@@ -433,14 +433,6 @@ export async function getServerSideProps({ params }) {
   );
   const ticket = await ticketRes.json();
 
-  const usersRes = await fetch(
-    `${process.env?.SITE_URL}/api/users` || "http://localhost:3000/api/users",
-    {
-      method: "GET",
-    }
-  );
-  const users = await usersRes.json();
-
   const projectRes = await fetch(
     `${process.env?.SITE_URL}/api/projects/${ticket.data.project}` ||
       `http://localhost:3000/api/projects/${ticket.data.project}`
@@ -448,7 +440,7 @@ export async function getServerSideProps({ params }) {
   const project = await projectRes.json();
 
   return {
-    props: { ticket: ticket.data, users: users.data, project: project.data },
+    props: { ticket: ticket.data, project: project.data },
   };
 }
 

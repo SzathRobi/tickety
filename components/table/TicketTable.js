@@ -23,7 +23,10 @@ function TicketTable({
             <td>
               <label>
                 Sort by:
-                <select>
+                <select
+                  value={sorter}
+                  onChange={(e) => setSorter(e.target.value)}
+                >
                   {sortOptions.map((sortOption) => (
                     <option key={sortOption} value={sortOption}>
                       {sortOption.replace("_", " ")}

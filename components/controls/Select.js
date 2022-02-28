@@ -12,7 +12,6 @@ function Select({
     <select
       value={value}
       name={name}
-      defaultValue={value}
       onChange={onChange}
       disabled={disabled}
       multiple={multiselect}
